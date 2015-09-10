@@ -1,0 +1,72 @@
+ALTER PROCEDURE [dbo].[Merchant_Select]
+	-- Add the parameters for the stored procedure here
+	@Id varchar(128)		
+		
+AS
+BEGIN
+	
+    -- Insert statements for procedure here
+DECLARE
+	@AppUserId int
+
+EXECUTE dbo.AspNetUsers_SelectAppUserId @AppUserId OUTPUT, @Id
+
+SELECT 
+	m.Id 
+	, m.Uid 
+	, m.Created 
+	, m.Name
+	, m.TitlePosition
+	, m.ContactName
+	, m.ContactLastName
+	, m.Phone
+	, m.Hours 
+	, m.AddressId 
+	, m.Url 
+	, m.Discount
+	, m.Slug 
+	, m.ExternalCustomerId 
+	, m.SubscriptionId 
+	, m.Description
+	, m.ContactPhone	
+	, a.Id
+	, a.Created
+	, a.Address1
+	, a.Address2
+	, a.City
+	, sp.[StateProvinceCode]
+	, a.Zip
+	, a.Country
+	, a.Latitude
+	, a.Longitude
+	, md.Id --Added starting here
+	, md.Path 
+	, md.Created
+	, md.MediaType
+	, md.UserType
+	, md.Description
+	, md.Title
+	, md.ContentType
+	, anu.Email
+
+
+FROM [dbo].[Merchants] m
+LEFT JOIN dbo.Addresses a ON m.AddressID = a.ID
+LEFT JOIN [dbo].StateProvince sp on a.StateProvinceId = sp.StateProvinceId
+--Starting here
+LEFT OUTER JOIN dbo.Medias md ON m.MediaId = md.Id
+
+LEFT OUTER JOIN dbo.AspNetUsers anu ON m.AppUserId = anu.AppUserId
+
+WHERE m.AppUserId = @AppUserId
+
+END
+
+/*
+DECLARE 
+
+@Id varchar(128) = '00ecd1fa-bd7f-4166-9489-d2e3b97274ff'
+
+EXEC Merchant_Select @Id 
+
+*/
