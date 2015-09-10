@@ -1,0 +1,139 @@
+using Microsoft.AspNet.Identity.EntityFramework;
+using Sabio.Web.Exceptions;
+using Sabio.Web.Models.Requests;
+using Sabio.Web.Models.Responses;
+using Sabio.Web.Services;
+using Sabio.Web.Services.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Web.Http;
+using Sabio.Web.Enums;
+using Sabio.Web.Models;
+using MailChimp;
+using MailChimp.Helper;
+using MailChimp.Lists;
+using Stripe;
+using System.Collections.Specialized;
+using System.Configuration;
+
+namespace Sabio.Web.Controllers.Api
+{
+    [RoutePrefix("api/register")]
+    public class RegisterApiController : ApiController
+    {
+        private IMerchantService _merchantService;
+        private IMailChimpService _mailChimpService;
+        private IMessagingService _messagingService;
+        private IOrganizationsService _organizationService;
+        private IBankingService _BankingService;
+        private ICreditCardService _creditCardService;
+        private ICategoryService _categoryService;
+        private IStripeService _stripeService; 
+
+        public RegisterApiController(IMessagingService MessagingService
+            , IMerchantService MerchantService
+            , IBankingService BankingService
+            , IOrganizationsService OrganizationService
+            , ICreditCardService CreditCardService
+            , IMailChimpService MailChimpService
+            , ICategoryService CategoryService
+            , IStripeService StripeService)
+        {
+            _messagingService = MessagingService;
+             _merchantService = MerchantService;
+             _BankingService = BankingService;
+            _organizationService = OrganizationService;
+            _creditCardService = CreditCardService;
+            _mailChimpService = MailChimpService;
+            _categoryService = CategoryService; 
+            _stripeService = StripeService; 
+        }
+        
+         [Route("merchant"), HttpPost]
+        public HttpResponseMessage MerchantSignUp(FullRegModel model)
+        {
+            IdentityUser newUser;
+            if (ModelState.IsValid && model != null)
+            {
+                EntityRegistrationData EntityModel = new EntityRegistrationData
+                {
+                    EntityName = model.Initial.Name,
+                    FirstName = model.Initial.ContactName,
+                    LastName = model.Initial.Name,
+                    Phone = model.Initial.ContactPhone,
+                    Email = model.Initial.Email,
+                    Password = model.Initial.Password,
+                    PasswordConfirm = model.Initial.PasswordConfirm
+
+                };
+                try
+                {
+                    newUser = Sabio.Web.Services.UserService.CreateUser(model.Initial.Email, model.Initial.Password);
+
+                    RegisterService.UpdateUserType(model.Initial.User, newUser.Id);   
+                   
+                }
+
+                catch (IdentityResultException result)
+                {
+                    ErrorResponse error = new ErrorResponse(result.Result.Errors);
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, error);
+                }
+                catch (Exception result)
+                {
+                    return Request.CreateResponse(HttpStatusCode.InternalServerError, result);
+                }
+
+
+                Guid newUid = _merchantService.InitialMerchantReg(model.Initial, model.Registration, newUser.Id);            
+            ItemResponse<Guid> responseModel = new ItemResponse<Guid>();
+            responseModel.Item = newUid;
+
+            if (model.CreditCard.CardholderName != null && model.CreditCard.ExternalAccountId != null )
+            {
+            Guid CreditCardUid = _creditCardService.InsertCreditInfo(model.CreditCard, newUser.Id);
+            responseModel.Item = CreditCardUid;
+            }
+            if (model.Banking.BankName != null && model.Banking.ExternalAccountId != null)
+            {
+            Guid bankUid = _BankingService.InsertBank(model.Banking, newUser.Id);
+            
+            responseModel.Item = bankUid;
+           
+            }
+
+            var Merch = _merchantService.GetMerchant(newUid);
+            int MerchId = Merch.Id;
+
+            for (int i = 0; i < model.categories.Length; i++)
+            {
+                MerchantCategoryModel category = new MerchantCategoryModel
+                {
+                    MerchantId = MerchId,
+                    CategoryId = model.categories[i]
+                };
+                _merchantService.InsertMerchantCategory(category);
+            }
+                    
+              
+
+             _messagingService.SendConfirmationEmail(EntityModel, newUser.Id);
+            _mailChimpService.SubscribeNewUser(model.Initial.Email, model.Initial.Name, model.Initial.ContactName, model.Initial.ContactPhone, model.Initial.User);
+
+           
+            return Request.CreateResponse(HttpStatusCode.OK, model);
+
+
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ModelState);
+            }
+
+           
+        }
+      }
+  }
