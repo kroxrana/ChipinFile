@@ -1,0 +1,120 @@
+
+@section scripts{
+<script src="~/Scripts/sabio.services.login.js"></script>
+<script src="~/Scripts/sabio.services.user.js"></script>
+<script type="text/javascript">
+
+    sabio.services.loginFactory = function ($baseService) {
+        var aSabioServiceObject = sabio.services.login;   
+        var newService = $baseService.merge(true, {}, aSabioServiceObject, $baseService); 
+        return newService;  
+    }
+    sabio.ng.addService(sabio.ng.app.module, "$loginService", ["$baseService"], sabio.services.loginFactory);
+
+    sabio.services.currentUserFactory = function ($baseService) {
+        var aCurrentUserServiceObject = sabio.services.user;
+        var newCurrentUserService = $baseService.merge(true, {}, aCurrentUserServiceObject, $baseService); 
+        console.log("service made");
+        return newCurrentUserService; 
+    sabio.ng.addService(sabio.ng.app.module, "$currentUserService", ["$baseService"], sabio.services.currentUserFactory);
+
+    // ======================================================= Service end ===============================================================================
+
+    // ======================================================= Controller ================================================================================
+
+    sabio.page.loginControllerFactory = function ($scope, $baseController, $loginService, $currentUserService) {
+
+        console.log("controller start");
+
+        var vm = this;
+        vm.item = null;
+
+        vm.$loginService = $loginService;
+        vm.$currentUserService = $currentUserService;
+        vm.$scope = $scope;
+        
+        vm.onLoginSuccess = _onLoginSuccess;
+        vm.onLoginError = _onLoginError;
+        vm.onGetUserSuccess = _onGetUserSuccess;
+        vm.onGetUserError = _onGetUserError;
+
+     
+        $baseController.merge(vm, $baseController);
+
+        vm.notify = vm.$currentUserService.getNotifier($scope);
+    
+        vm.notify = vm.$loginService.getNotifier($scope);
+        
+      
+        vm.newUser = null; 
+        vm.loginForm = null; 
+        vm.showNewLoginErrors = false;   
+        vm.showLoginErrors = false;
+      
+        vm.signIn = _signIn;
+
+       
+        render();
+
+        function render() {
+
+        }
+        console.log("controller created");
+
+
+        function _signIn() {
+            vm.showNewLoginErrors = true;
+            if (vm.loginForm.$valid) {
+                console.log("data is valid! go save this object -> ", vm.newUser);
+                vm.$loginService.attemptLogin(vm.newUser, vm.onLoginSuccess, vm.onLoginError);
+            }
+            else {
+                console.log("form submitted with invalid data :(")
+            }
+        }
+
+
+        function _onLoginSuccess(data, status, xhr) {
+            vm.showLoginErrors = false;
+            vm.$currentUserService.getCurrentUser(vm.onGetUserSuccess, vm.onGetUserError);
+            
+            console.log(data);
+        }
+
+        function _onGetUserSuccess(data) {
+            vm.notify(function () {
+                vm.item = data.item;
+                console.log("this is your id", data.item)
+
+
+                if (vm.item.userType === 0) {
+                    window.location = "/member/dashboard";
+                } else if (vm.item.userType === 1) {
+                    window.location = "/merchant/dashboard";
+                } else if (vm.item.userType === 2) {
+                    window.location = "/organization/dashboard";
+                } else {
+                    return error;
+                }
+            });
+
+        }
+
+
+        function _onLoginError(jqXhr, error) {
+            console.error(error);
+            vm.notify(function () {               
+                vm.showLoginErrors = true;
+            }
+        )
+        }
+
+        function _onGetUserError(jqXhr, error) {
+            console.error(error);
+        }
+    }
+
+    sabio.ng.addController(sabio.ng.app.module
+        , "loginController"
+        , ['$scope', '$baseController', "$loginService", "$currentUserService"]
+        , sabio.page.loginControllerFactory);
