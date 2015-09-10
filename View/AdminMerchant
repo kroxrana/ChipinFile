@@ -1,0 +1,134 @@
+@{
+    Layout = "~/Views/Shared/_ChipinLayout.cshtml";
+}
+
+<main>
+    <div class="container" >
+        <section data-ng-controller="merchantController as merchantListInfo" id="merchantController">
+            <h2>Merchant List</h2>
+
+            <table id="myTable" class="table table-condensed table-hover table-striped"
+                   data-toggle="bootgrid" data-ajax="true">
+
+                <thead id="tableHead">
+
+                    <tr>
+
+                        <th id="createdDate">Created</th>
+
+                        <th id="website">Url</th>
+                        <th id="discount">Discount</th>
+                        <th id="description">Description</th>
+                        <th id="address1">Address</th>
+                        <th id="city">City</th>
+                        <th id="state">State</th>
+                        <th id="zipCode">Zip</th>
+                        <th id="edit"></th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+                    <tr class="tableRow" data-ng-repeat="merch in merchantListInfo.items">
+                        <td class="createdData">{{merch.created}}</td>
+                        <td class="websiteData">{{merch.url}}</td>
+                        <td class="discountData">{{merch.discount}}</td>
+                        <td class="descriptionData">{{merch.description}}</td>
+                        <td class="address1Data">{{merch.address.address1}}</td>
+                        <td class="cityData">{{merch.address.city}}</td>
+                        <td class="stateData">{{merch.address.state}}</td>
+                        <td class="zipCodeData">{{merch.address.zip}}</td>
+                        <td class="edit">
+                            <a class="btn-sm btn-info" role="button"
+                                ng-href="/merchant/edit/{{merch.uid}}">Edit</a>
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+        </section>
+</div> <!--container-->
+ 
+        
+            
+   
+
+</main>
+
+@section Scripts {
+<script src="~/Scripts/sabio.services.merchant.js"></script>
+    
+    <script>
+             
+        sabio.services.merchant.merchantServiceFactory = function ($baseService) {
+            var aMerchantObject = sabio.services.merchant;  
+            var newMerchantService = $.extend(true, {}, aMerchantObject, $baseService); 
+            return newMerchantService;
+        };
+
+             
+        sabio.ng.addService(sabio.ng.app.module 
+            , "$merchantService"
+            , ["$baseService"]   
+            , sabio.services.merchant.merchantServiceFactory);  
+
+
+        sabio.services.merchant.merchantControllerFactory = function (
+              $scope
+            , $baseController
+            , $merchantService) {
+
+           
+            var vm = this;    
+            vm.items = null;
+            vm.selectedMerchant = null;
+
+                  
+            vm.$merchantService = $merchantService;
+
+            vm.receiveItems = _receiveItems;
+            vm.onMerchError = _onMerchError;
+            vm.selectMerchant = _selectMerchant;
+            vm.saveStatus = _saveStatus;
+
+            $.extend(vm, $baseController);
+
+            
+            vm.notify = vm.$merchantService.getNotifier($scope);
+            
+            render();
+
+            function render() {
+                vm.$merchantService.adminSelect(vm.receiveItems, vm.onMerchError);
+            }
+            function _receiveItems(data) {
+                vm.notify(function () {
+                    vm.items = data.items;
+                    console.log("this is your", data.items)
+                });
+            }
+            function _selectMerchant(aMerchant) {
+                console.log(aMerchant);
+                vm.selectedMerchant = aMerchant;
+            }
+            function _saveStatus(aMerchant) {
+                console.log("Go and save this new data");
+                console.log(aMerchant);
+            }
+            function _onMerchError(jqXhr, error) {
+                console.error(error);
+            }
+        }
+
+        sabio.ng.addController(sabio.ng.app.module
+            , "merchantController"
+            , ['$scope', '$baseController', "$merchantService"]
+            , sabio.services.merchant.merchantControllerFactory);
+
+
+
+    </script>
+}
