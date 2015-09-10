@@ -1,0 +1,29 @@
+using Microsoft.AspNet.Identity.EntityFramework;
+using Sabio.Web.Domain;
+using Sabio.Web.Enums;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+namespace Sabio.Web.Models.ViewModels
+{
+  
+    public class BaseViewModel
+    {
+       
+
+        public BaseViewModel()
+        {
+            this.NavigationView = "Navbar/_Default";
+        }
+
+        public bool IsLoggedIn { get; set; }
+        public UserType CurrentUserType { get; set; }
+        public IdentityUser CurrentUser { get; set; }
+        public string NavigationView { get; set; }
+        public string RouteKey { get; set; }
+        public Entity EntityInfo { get; set; }
+        public string DisplayName { get; set; }
+    }
+}
