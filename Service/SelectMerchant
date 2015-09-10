@@ -1,0 +1,96 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Data;
+using System.Data.SqlClient;
+using Sabio.Data;
+using Sabio.Web.Models.Requests;
+using Sabio.Web.Domain;
+using Sabio.Web.Enums;
+using Sabio.Web.Models.Responses;
+using Sabio.Web.Models;
+using Sabio.Web.Services.Interfaces;
+
+public Merchant GetMerchant(Guid merchantId)
+        {
+            Merchant selection = null;
+
+
+            DataProvider.ExecuteCmd(GetConnection, "dbo.Merchant_SelectByGuid"
+               , inputParamMapper: delegate(SqlParameterCollection paramCollection)
+               {
+
+                   paramCollection.AddWithValue("@Uid", merchantId); 
+
+                                                                      
+               }        
+               , map: delegate(IDataReader reader, short set)
+               {
+                   selection = new Merchant();
+                   int startingIndex = 0;
+                 
+                   selection.Id = reader.GetSafeInt32(startingIndex++);
+                   selection.Uid = reader.GetGuid(startingIndex++);
+                   selection.Created = reader.GetDateTime(startingIndex++);
+                   selection.Name = reader.GetSafeString(startingIndex++);
+                   selection.TitlePosition = reader.GetSafeString(startingIndex++);
+                   selection.ContactName = reader.GetSafeString(startingIndex++);
+                   selection.ContactLastName = reader.GetSafeString(startingIndex++);
+                   selection.Phone = reader.GetSafeString(startingIndex++);
+                   selection.Hours = reader.GetSafeString(startingIndex++);
+                   selection.AddressId = reader.GetSafeInt32(startingIndex++);
+                   selection.Url = reader.GetSafeString(startingIndex++);
+                   selection.Discount = reader.GetSafeInt32(startingIndex++);
+                   selection.Slug = reader.GetSafeString(startingIndex++);
+                   selection.ExternalCustomerId = reader.GetSafeString(startingIndex++);
+                   selection.SubscriptionId = reader.GetSafeInt32(startingIndex++);
+                   selection.Description = reader.GetSafeString(startingIndex++);
+                   selection.ContactPhone = reader.GetSafeString(startingIndex++);
+
+                   selection.Address = new Address();
+                   selection.Address.Id = reader.GetSafeInt32(startingIndex++);
+                   if (selection.Address.Id > 0)
+                   {
+                       selection.Address.Created = reader.GetSafeDateTime(startingIndex++);
+                       selection.Address.Address1 = reader.GetSafeString(startingIndex++);
+                       selection.Address.Address2 = reader.GetSafeString(startingIndex++);
+                       selection.Address.City = reader.GetSafeString(startingIndex++);
+                       selection.Address.State = reader.GetSafeString(startingIndex++);
+                       selection.Address.Zip = reader.GetSafeString(startingIndex++);
+                       selection.Address.Country = reader.GetSafeString(startingIndex++);
+                       selection.Address.Latitude = reader.GetSafeDecimal(startingIndex++);
+                       selection.Address.Longitude = reader.GetSafeDecimal(startingIndex++);
+                   }
+                   else 
+                   { 
+                       selection.Address = null;
+                       startingIndex += 9;
+                   }
+
+                   selection.Media = new Media();
+                   selection.Media.ImageId = reader.GetSafeInt32(startingIndex++);
+                   if (selection.Media.ImageId > 0)
+                   {
+                      selection.Media.Path = reader.GetSafeString(startingIndex++);
+                      selection.Media.DateCreated = reader.GetDateTime(startingIndex++);
+                      selection.Media.MediaEnum = reader.GetSafeEnum<MediaType>(startingIndex++);
+                      selection.Media.User = reader.GetSafeEnum<UserType>(startingIndex++);
+                      selection.Media.Description = reader.GetSafeString(startingIndex++);
+                      selection.Media.Title = reader.GetSafeString(startingIndex++);
+                      selection.Media.ContentType = reader.GetSafeString(startingIndex++);
+                      selection.Media.FullPath = baseUrl + selection.Media.Path;
+                   }
+                   else { 
+                       selection.Media = null;
+                       startingIndex += 7;
+                   };
+  
+               }
+               );
+
+            // Added by JHB to retrieve the Categories list
+            MerchantCategories catList = GetMerchantCategory(selection.Uid);
+            selection.Categories = catList.Categories;
+            return selection;
+        }
