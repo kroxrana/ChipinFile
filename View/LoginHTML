@@ -1,0 +1,127 @@
+@model Sabio.Web.Models.ViewModels.BaseViewModel
+@{
+    ViewBag.Title = "Login";
+    Layout = "~/Views/Shared/_ChipinLayout.cshtml";
+}
+
+<!-- ============================================================= SECTION – TEAM ============================================================= -->
+
+<section id="login-section" class="light-bg">
+    <div class="container inner-top inner-bottom-sm">
+
+        <div class="row">
+            <div class="col-md-8 col-sm-10 center-block text-center">
+                <header>
+                    <h1>Login</h1>
+                </header>
+                
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+
+        <div class="row inner-top-sm text-center">
+
+            <div class="col-sm-4 inner-bottom-sm col-sm-offset-4 inner-left inner-right">
+                <figure class="member">
+
+                    <div class="">
+                        <a href="#"><img src="~/Content/REEN/images/Chipin-Icn-B.png" class=""></a>
+                    </div><!-- /.icon-overlay -->
+
+                    <figcaption>
+
+                        
+                        <div class="row animate-if" data-ng-if="true"
+                             data-ng-include="'/scripts/app/Login.html'">
+                        </div>
+
+                            <ul class="social">
+                                <li><a href="#"><i class="icon-s-facebook"></i></a></li>
+                                <li><a href="#"><i class="icon-s-instagram"></i></a></li>
+                                <li><a href="#"><i class="icon-s-twitter"></i></a></li>
+                            </ul><!-- /.social -->
+
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <button type="button" id="register-button" class="btn btn-default" data-toggle="modal" data-target="#registerModal">Register</button>
+                                </div>
+                            </div>
+
+
+                    </figcaption>
+
+                </figure>
+            </div><!-- /.col -->
+
+        </div><!-- /.row -->
+
+    </div><!-- /.container -->
+    <script type="text/ng-template" id="/scripts/app/Login.html">
+        <div data-ng-controller="loginController as dashboard" id="loginCtrler">
+            <form id="loginForm" name="dashboard.loginForm" ng-submit="dashboard.signIn()" novalidate>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="alert " id="msgWindow"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <input type="email" class="form-control ng-class:{'error': dashboard.showNewLoginErrors && !dashboard.LoginForm.username.$valid}"
+                               name="username"
+                               id="username"
+                               placeholder="EMAIL/USERNAME"
+                               ng-model="dashboard.newUser.username"
+                               required
+                               email
+                               style="border-color:#b9c3cd">
+                        <span class="error" ng-show="dashboard.showNewLoginErrors && dashboard.loginForm.username.$error.required">Username is required</span>
+                        <span class="error" ng-show="dashboard.showNewLoginErrors && dashboard.loginForm.username.$error.email">Username must be in the form of example@domain.com</span>
+
+                        <input type="password" class="form-control ng-class{'error': dashboard.showNewLoginErrors && !dashboard.loginForm.password.$valid}"
+                               name="password"
+                               id="password"
+                               placeholder="PASSWORD"
+                               ng-model="dashboard.newUser.password"
+                               tooltip="Password must contain at least 1 number and 1 uppercase, 1 lowercase, and 1 special character."
+                               tooltip-placement="right"
+                               tooltip-enable="!dashboard.newUser.password"
+                               required
+                               ng-minlength="6"
+                               ng-maxlength="13"
+                               style="border-color:#b9c3cd">
+                        <span class="error" ng-show="dashboard.showNewLoginErrors && dashboard.loginForm.password.$error.required">Password is required</span>
+                        <span class="error" ng-show="dashboard.showNewLoginErrors && dashboard.loginForm.password.$error.minlength">Password must be at least 6 characters</span>
+                        <span class="error" ng-show="dashboard.showNewLoginErrors && dashboard.loginForm.password.$error.maxlength">Password cannot exceed 13 characters</span>
+                        <span class="alert-danger error" ng-show="dashboard.showLoginErrors">Login Failed</span>
+                        <button type="button" id="loginButton" class="btn btn-default col-sm-12" ng-click="dashboard.signIn()" style="margin:0px;">Sign In</button>
+                        <p style="color: #72879d; border-bottom: none"><a href="/password" style="border-bottom: none">Forgot your password?</a></p>
+                     </div>
+                    
+                </div>
+            </form>
+        </div>
+    </script>
+    <!-- Modal -->
+   
+    @*<div class="modal fade" id="registerModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="registrationLabel">How would you like to register</h4>
+                </div>
+                <div class="modal-body">
+                    <ul>
+                        <li><a href="../Register/MemberRegistration" class="btn btn-default">Individual Member</a></li>
+                        <li><a href="../Register/MerchantRegistration" class="btn btn-default">Merchant/Vendor</a></li>
+                        <li><a href="../Register/OrganizationRegistration" class="btn btn-default">Charitable Organization</a></li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+*@
+    </section>
+
