@@ -1,0 +1,45 @@
+ALTER PROCEDURE [dbo].[Merchant_SelectAdmin]
+		
+		
+AS
+BEGIN
+	
+    -- Insert statements for procedure here
+
+
+SELECT
+m.Id 
+	, m.Uid 
+	, m.Created 
+	, m.Name
+	, m.TitlePosition
+	, m.ContactName 
+	, m.ContactLastName
+	, m.Phone
+	, m.Hours 
+	, m.AddressId 
+	, m.Url 
+	, m.Discount
+	, m.Slug 
+	, m.ExternalCustomerId 
+	, m.SubscriptionId 
+	, m.Description
+	, m.ContactPhone	
+	, a.Id
+	, a.Created
+	, a.Address1
+	, a.Address2
+	, a.City
+	, sp.[StateProvinceCode]
+	, a.Zip
+	, a.Country
+	, a.Latitude
+	, a.Longitude
+FROM [dbo].[Merchants] m
+LEFT JOIN dbo.Addresses a ON m.AddressID = a.ID
+LEFT JOIN [dbo].StateProvince sp on a.StateProvinceId = sp.StateProvinceId
+
+END
+
+
+--EXECUTE [dbo].[Merchant_SelectAdmin]
