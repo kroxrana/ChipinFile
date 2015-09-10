@@ -1,0 +1,63 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Data;
+using System.Data.SqlClient;
+using Sabio.Data;
+using Sabio.Web.Models.Requests;
+using Sabio.Web.Domain;
+using Sabio.Web.Enums;
+using Sabio.Web.Models.Responses;
+using Sabio.Web.Models;
+using Sabio.Web.Services.Interfaces;
+
+ public Guid InitialMerchantReg(InitialMerchRegistration merch, MerchantRegistration model, string currentUserId)
+        {
+            Guid uid = Guid.Empty;
+
+            //connecting form to address table
+            CreateAddressModel addressModel = new CreateAddressModel();
+            addressModel.Address1 = model.Address;
+            addressModel.City = model.City;
+            addressModel.Zip = model.Zip;
+            addressModel.StateProvinceId = model.StateProvinceId;
+            addressModel.Latitude = model.Latitude;
+            addressModel.Longitude = model.Longitude;
+            // set more fields from model here
+
+            int addressId = _addressService.InsertAddresses(addressModel);
+
+            DataProvider.ExecuteNonQuery(GetConnection, "dbo.MerchantInitial_Insert"
+               , inputParamMapper: delegate(SqlParameterCollection paramCollection)
+               {
+                   SqlParameter p = new SqlParameter("@Uid", System.Data.SqlDbType.UniqueIdentifier);
+                   p.Direction = System.Data.ParameterDirection.Output;
+
+                   paramCollection.Add(p);
+
+                   paramCollection.AddWithValue("@UserId", currentUserId);
+                   paramCollection.AddWithValue("@Name", merch.Name);
+                   paramCollection.AddWithValue("@ContactName", merch.ContactName);
+                   paramCollection.AddWithValue("@ContactLastName", merch.ContactLastName);
+                   paramCollection.AddWithValue("@TitlePosition", merch.TitlePosition);
+                   paramCollection.AddWithValue("@ContactPhone", merch.ContactPhone);
+                   paramCollection.AddWithValue("@Pin", merch.Pin); 
+                   paramCollection.AddWithValue("@AddressId", addressId);
+                   paramCollection.AddWithValue("@Phone", model.Phone);
+                   paramCollection.AddWithValue("@Url", model.url);
+                   paramCollection.AddWithValue("@Discount", model.Discount);
+                   paramCollection.AddWithValue("@Slug", model.Slug);
+                   paramCollection.AddWithValue("@ExternalCustomerId", DBNull.Value);
+                   paramCollection.AddWithValue("@SubscriptionId", 77);
+                   
+                   
+
+               }, returnParameters: delegate(SqlParameterCollection param)
+               {
+                   Guid.TryParse(param["@Uid"].Value.ToString(), out uid);
+               });
+
+
+            return uid;
+        }
