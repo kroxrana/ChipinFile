@@ -1,0 +1,742 @@
+
+@{
+  
+    Layout = "~/Views/Shared/_ChipinLayout.cshtml";
+}
+
+<!-- ============================================================= SECTION – CONTACT FORM ============================================================= -->
+<!--=============================INITIAL REGISTRATION=======================================-->
+<style>
+    #map-canvas {
+        
+        display: block;
+        width: 66%;
+        height: 200px;
+        min-width: 20px;
+    }
+</style>
+
+
+
+<div class="ng-view" autoscroll="true" data-ng-cloak></div>
+
+<script type="text/ng-template" id="/merch/initialreg">
+    <section id="initialRegCtrl" style="padding-top:30px; padding-bottom:35px;">
+        <form id="initialRegForm" name="initial.initialRegForm" ng-submit="initial.initialClick()" novalidate>
+            <div class="form-group">
+            <div class="container">
+
+                <div class="row">
+                    <div class="col-sm-6 center-block">
+                        <h3>Page 1 of 3: Contact Information</h3>
+                        <label for="merchantName">Business Name*</label>
+                        <input type="text" name="merchantName"
+                               class="form-control ng-class:{'error': initial.showNewInitialRegErrors && !initial.initialRegForm.merchantName.$valid}"
+                               placeholder="MERCHANT NAME"
+                               id="merchantName"
+                               ng-model="initial.item.name"
+                               ng-minlength="2"
+                               required>
+
+                        <div role="alert" class="help-inline error">
+                            <span class="error" ng-show="initial.showNewInitialRegErrors && initial.initialRegForm.merchantName.$error.required">Merchant name is required</span>
+                            <span class="error" ng-show="initial.showNewInitialRegErrors && initial.initialRegForm.merchantName.$error.minlength">Merchant name must be at least 2 didgits long</span>
+
+                        </div>
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
+
+
+                <div class="row">
+                    <div class="col-sm-6  center-block">
+                        <div class=" col-sm-6  " style="padding-left:0;">
+                            <label for="contactName">Contact Name*</label>
+                            <input type="text" name="contactName"
+                                   class="form-control ng-class:{'error': initial.showNewInitialRegErrors && !initial.initialRegForm.contactName.$valid}"
+                                   placeholder="FIRST NAME"
+                                   id="contactName"
+                                   ng-model="initial.item.contactName"
+                                   required>
+
+                            <div role="alert" class="help-inline error">
+                                <span class="error" ng-show="initial.showNewInitialRegErrors && initial.initialRegForm.contactName.$error.required">Contact name is required</span>
+
+                            </div>
+                        </div><!-- /.col -->
+                        <div class="col-sm-6  " style="padding-top:32px; padding-right:0;">
+                            <input type="text" name="contactLastName"
+                                   class="form-control ng-class:{'error': initial.showNewInitialRegErrors && !initial.initialRegForm.contactLastName.$valid}"
+                                   placeholder="LAST NAME"
+                                   id="contactName"
+                                   ng-model="initial.item.contactLastName"
+                                   required>
+
+                            <div role="alert" class="help-inline error">
+                                <span class="error" ng-show="initial.showNewInitialRegErrors && initial.initialRegForm.contactLastName.$error.required">Contact name is required</span>
+
+                            </div>
+
+                        </div><!-- /.col -->
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
+
+
+                <div class="row">
+                    <div class="col-sm-6 center-block">
+                        <div class="col-sm-6" style="padding-left:0;">
+                            <label for="phone">Contact Phone Number*</label>
+                            <input type="text" name="contactPhone"
+                                   class="form-control ng-class:{'error': initial.showNewInitialRegErrors && !initial.initialRegForm.contactPhone.$valid}"
+                                   placeholder="PHONE NUMBER"
+                                   id="contactPhone"
+                                   ng-model="initial.item.contactPhone"
+                                   required>
+
+                            <div role="alert" class="help-inline error">
+                                <span class="error" ng-show="initial.showNewInitialRegErrors && initial.initialRegForm.contactPhone.$error.required">Contact phone number is required</span>
+
+                            </div>
+
+                        </div><!-- /.col -->
+
+
+                        <div class="col-sm-6" style="padding-right:0;">
+                            <label for="title">Title/Position*</label>
+                            <input type="text"
+                                   name="title"
+                                   placeholder="TITLE/POSITION"
+                                   id="title"
+                                   class=" form-control ng-class:{'error': initial.showNewOrganizationErrors && !initial.initialRegForm.title.$valid}"
+                                   ng-model="initial.item.titlePosition"
+                                   required />
+
+                            <div role="alert" class="help-inline">
+                                <!-- init.showNewEmployeeErrors is set to true the first time the form is submitted. this happens in the init.addEmployee() function. -->
+                                <span class="error" ng-show="initial.showNewOrganizationErrors && initial.initialRegForm.title.$error.required">Title/Position is required</span>
+                            </div>
+                        </div>
+                    </div><!-- /.col -->
+                </div><!-- /.col -->
+           
+
+            <div class="row">
+                <div class="col-sm-6 center-block">
+                    <label for="email">Email*</label>
+                    <input type="email" name="email"
+                           class="form-control ng-class:{'error': initial.showNewInitialRegErrors && !initial.initialRegForm.email.$valid}"
+                           placeholder="EXAMPLE@CHIPIN.COM"
+                           id="email"
+                           ng-model="initial.item.email"
+                           required>
+
+                    <div role="alert" class="help-inline error">
+                        <span class="error" ng-show="initial.showNewInitialRegErrors && initial.initialRegForm.email.$error.required">Email is required</span>
+                        <span class="error" ng-show="initial.showNewInitialRegErrors && initial.initialRegForm.email.$error.email">Must be a valid email</span>
+
+                    </div>
+                </div><!-- /.col -->
+            </div><!-- /.row -->
+
+            <div class="row">
+                <div class="col-sm-6  center-block">
+                    <label for="password">Password*</label>
+                    <input type="password" name="password"
+                           class="form-control ng-class:{'error': initial.showNewInitialRegErrors && !initial.initialRegForm.password.$valid}"
+                           placeholder="ENTER PASSWORD"
+                           id="password"
+                           ng-model="initial.item.password"
+                           ng-minlength="6"
+                           ng-maxlength="13"
+                           required>
+
+                    <div role="alert" class="help-inline error">
+                        <span class="error" ng-show="initial.showNewInitialRegErrors && initial.initialRegForm.password.$error.required">Password is required</span>
+                        <span class="error" ng-show="initial.showNewInitialRegErrors && initial.initialRegForm.password.$error.minlength">Password must be at least 6 didgits long</span>
+                        <span class="error" ng-show="initial.showNewInitialRegErrors && initial.initialRegForm.password.$error.maxlength">Password must be no more than 13 didgits long</span>
+                    </div>
+                </div><!-- /.col -->
+            </div><!-- /.row -->
+
+            <div class="row">
+                <div class="col-sm-6  center-block">
+                    <label for="passwordConfirm">Confirm Password*</label>
+                    <input type="password" name="passwordConfirm"
+                           class="form-control ng-class:{'error': initial.showNewInitialRegErrors && !initial.initialRegForm.passwordConfirm.$valid}"
+                           placeholder="CONFIRM PASSWORD"
+                           id="passwordConfirm"
+                           ng-model="initial.item.passwordConfirm"
+                           ng-minlength="6"
+                           ng-maxlength="13"
+                           required>
+
+                    <div role="alert" class="help-inline error">
+                        <span class="error" ng-show="initial.showNewInitialRegErrors && initial.initialRegForm.passwordConfirm.$error.required">Password confirmation is required</span>
+                        <span class="error" ng-show="initial.showNewInitialRegErrors && initial.initialRegForm.passwordConfirm.$error.compareTo">Password does not match</span>
+                        <span class="error" ng-show="initial.showNewInitialRegErrors && initial.initialRegForm.passwordConfirm.$error.minlength">Password must be at least 6 didgits long</span>
+                        <span class="error" ng-show="initial.showNewInitialRegErrors && initial.initialRegForm.passwordConfirm.$error.maxlength">Password must be no more than 13 didgits long</span>
+                    </div>
+                </div><!-- /.col -->
+            </div><!-- /.row -->
+
+            <div class="row">
+                <div class="col-sm-2 col-sm-offset-3">
+                    <label for="pin">Pin*</label>
+                    <p style="font-size:small; padding:0; margin:0; border:0;">Please enter a 4 digit PIN</p>
+                    <input type="text" name="pin"
+                           class="form-control ng-class:{'error': initial.showNewInitialRegErrors && !initial.initialRegForm.pin.$valid}"
+                           placeholder="MERCHANT PIN"
+                           id="pin"
+                           ng-model="initial.item.pin"
+                           ng-minlength="4"
+                           ng-maxlength="4"
+                           required>
+
+                    <div role="alert" class="help-inline error">
+                        <span class="error" ng-show="initial.showNewInitialRegErrors && initial.initialRegForm.pin.$error.required">Pin is required</span>
+                        <span class="error" ng-show="initial.showNewInitialRegErrors && initial.initialRegForm.pin.$error.minlength">Pin must be at least 4 numbers long</span>
+                        <span class="error" ng-show="initial.showNewInitialRegErrors && initial.initialRegForm.pin.$error.maxlength">Pin must be no more than 4 numbers long</span>
+                    </div>
+                </div><!-- /.col -->
+            </div><!-- /.row -->
+
+
+
+
+            <div class="row">
+
+                <div class="col-sm-3 col-sm-offset-3">
+                    <button type="submit" id="cmdAddInitial" class="btn btn-success">Next</button>
+
+                    @*<a class="btn-lg btn-info" role="button" ng-href="/register/merchantregistration#/registration">Next</a>*@
+                </div>
+            </div><!--/CONTAINER-->
+            </div><!--form grounp-->
+        </form>
+    </section>
+</script>
+
+<!--=============================END INITIAL REGISTRATION=======================================-->
+<!--=============================CONTINUED REGISTRATION=======================================-->
+
+<script type="text/ng-template" id="/merch/registration">
+    <section id="registrationCtrl" >
+        <form id="registrationForm" style="padding-top:30px; padding-bottom:35px;" name="reg.registrationForm" ng-submit="reg.regClick()" novalidate>
+            
+                <div class="container">
+
+                    <div class="row">
+                        <div class="col-sm-6 form-group center-block">
+                            <h3>Page 2 of 3: Business Information</h3>
+
+                            <label for="merchantAddress">Business Address*</label>
+                            <input type="text" name="merchantAddress"
+                                   class="form-control ng-class:{'error': reg.showNewRegistrationErrors && !reg.registrationForm.merchantAddress.$valid}"
+                                   placeholder="ADDRESS"
+                                   id="merchantAddress"
+                                   ng-model="reg.item.address.address1"
+                                   required>
+
+                            <div role="alert" class="help-inline error">
+                                <span class="error" ng-show="reg.showNewRegistrationErrors && reg.registrationForm.merchantAddress.$error.required">Address is required</span>
+                            </div>
+
+                            <div class="col-sm-6 form-group " style="padding-left:0;">
+                                <input type="text" name="city"
+                                       class="form-control ng-class:{'error': reg.showNewRegistrationErrors && !reg.registrationForm.city.$valid}"
+                                       placeholder="CITY"
+                                       id="city"
+                                       ng-model="reg.item.address.city"
+                                       required>
+
+                                <div role="alert" class="help-inline error">
+                                    <span class="error" ng-show="reg.showNewRegistrationErrors && reg.registrationForm.city.$error.required">City is required</span>
+                                </div>
+
+                            </div><!-- /.col -->
+
+                            <div class="col-sm-3 form-group ">
+                                <select type="text" name="state"
+                                        class="form-control ng-class:{'error': reg.showNewRegistrationErrors && !reg.registrationForm.state.$valid}"
+                                        placeholder="ST"
+                                        id="state"
+                                        ng-model="reg.item.address.stateProvinceId"
+                                        ng-options="state.stateProvinceCode for state in reg.states track by state.stateProvinceId"
+                                        required></select>
+
+                                <div role="alert" class="help-inline error">
+                                    <span class="error" ng-show="reg.showNewRegistrationErrors && reg.registrationForm.state.$error.required">State is required</span>
+
+                                </div>
+                            </div><!-- /.col -->
+
+                            <div class="col-sm-3 form-group " style="padding-right:0;">
+                                <input type="text" name="zip"
+                                       class="form-control ng-class:{'error': reg.showNewRegistrationErrors && !reg.registrationForm.zip.$valid}"
+                                       placeholder="ZIP"
+                                       id="zip"
+                                       ng-model="reg.item.address.zip"
+                                       ng-minlength="5"
+                                       ng-maxlength="5"
+                                       required>
+
+                                <div role="alert" class="help-inline error">
+                                    <span class="error" ng-show="reg.showNewRegistrationErrors && reg.registrationForm.zip.$error.required">Zip Code is required</span>
+                                    <span class="error" ng-show="reg.showNewRegistrationErrors && reg.registrationForm.zip.$error.minlength">Zip Code must be at least 5 didgits long</span>
+                                    <span class="error" ng-show="reg.showNewRegistrationErrors && reg.registrationForm.zip.$error.maxlength">Zip Code must be no more than 5 didgits long</span>
+                                </div>
+
+                            </div><!-- /.col -->
+                        </div><!-- /.col -->
+
+                    </div><!-- /.row -->
+
+
+                    <div class="row">
+                        <div class="col-sm-6 form-group center-block">
+                            <label for="merchPhone">Business Phone Number*</label>
+                            <input type="text" name="merchPhone"
+                                   class="form-control ng-class:{'error': reg.showNewRegistrationErrors && !reg.registrationForm.merchPhone.$valid}"
+                                   placeholder="MERCHANT PHONE NUMBER"
+                                   id="merchPhone"
+                                   ng-model="reg.item.phone"
+                                   ng-minlength="10"
+                                   ng-maxlength="15"
+                                   required>
+
+                            <div role="alert" class="help-inline error">
+                                <span class="error" ng-show="reg.showNewRegistrationErrors && reg.registrationForm.merchPhone.$error.required">Merchant phone number is required</span>
+                                <span class="error" ng-show="reg.showNewRegistrationErrors && reg.registrationForm.merchPhone.$error.minlength">Merchant phone must be at least 10 didgits long</span>
+                                <span class="error" ng-show="reg.showNewRegistrationErrors && reg.registrationForm.merchPhone.$error.maxlength">Merchant phone must be no more than 15 didgits long</span>
+                            </div>
+
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+
+
+                    <div class="row">
+                        <div class="col-sm-6 form-group center-block">
+                            <label for="website">Website</label>
+                            <input type="text" name="website"
+                                   class="form-control ng-class:{'error': reg.showNewRegistrationErrors && !reg.registrationForm.website.$valid}"
+                                   placeholder="WWW.EXAMPLE.COM"
+                                   id="website"
+                                   ng-model="reg.item.url"
+                                   ng-minlength="5"
+                                   required>
+
+                            <div role="alert" class="help-inline error">
+                                <span class="error" ng-show="reg.showNewRegistrationErrors && reg.registrationForm.website.$error.required">Website is required</span>
+                                @*<span class="error" ng-show="reg.showNewRegistrationErrors && reg.registrationForm.website.$error.url">Website must be in valid format: http://www.example.com</span>*@
+                                <span class="error" ng-show="reg.showNewRegistrationErrors && reg.registrationForm.website.$error.minlength">Website must be at least 5 didgits long</span>
+                            </div>
+
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+
+
+
+                    @*<div class="table" style="display: table;">
+                        <div class="Title" style="display: table-caption; text-align: left;">
+                            <p>Catagory</p>
+                        </div>
+                        <div class="row" style="display: table-row;">
+                            <input type="checkbox" /><div class="cell" style="display: table-cell;">Catagory</div>
+                            <input type="checkbox" /><div class="cell" style="display: table-cell;">Catagory</div>
+                            <input type="checkbox" /><div class="cell" style="display: table-cell;">Catagory</div>
+                            <input type="checkbox" /><div class="cell" style="display: table-cell;">Catagory</div>
+                        </div>
+
+                        <div class="row" style="display: table-row;">
+                            <input type="checkbox" /><div class="cell" style="display: table-cell;">Catagory</div>
+                            <input type="checkbox" /><div class="cell" style="display: table-cell;">Catagory</div>
+                            <input type="checkbox" /><div class="cell" style="display: table-cell;">Catagory</div>
+                            <input type="checkbox" /><div class="cell" style="display: table-cell;">Catagory</div>
+                        </div>
+
+                        <div class="row" style="display: table-row;">
+                            <input type="checkbox" /><div class="cell" style="display: table-cell;">Catagory</div>
+                            <input type="checkbox" /><div class="cell" style="display: table-cell;">Catagory</div>
+                            <input type="checkbox" /><div class="cell" style="display: table-cell;">Catagory</div>
+                            <input type="checkbox" /><div class="cell" style="display: table-cell;">Catagory</div>
+                        </div>
+
+                        <div class="row" style="display: table-row;">
+                            <input type="checkbox" /><div class="cell" style="display: table-cell;">Catagory</div>
+                            <input type="checkbox" /><div class="cell" style="display: table-cell;">Catagory</div>
+                            <input type="checkbox" /><div class="cell" style="display: table-cell;">Catagory</div>
+                            <input type="checkbox" /><div class="cell" style="display: table-cell;">Catagory</div>
+                        </div>
+                    </div>*@
+
+
+                    <div class="row">
+                        <div class="col-sm-7 col-sm-offset-3">
+                            <div>
+                                <label style="padding-left:0px;">Category</label>
+                            </div>
+
+                            <div class="col-sm-4 col-md-4" ng-repeat="category in reg.categories" style="padding-right:2px; padding-bottom:10px;">
+                                <span >
+                                    <input type="checkbox" checklist-model="reg.checked.role" checklist-value="category.id" id="checkBox" />
+                                    <label for="checkBox" style="font-weight:normal;">{{category.name}}</label>
+                                </span>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+
+                    <div class="row">
+                        <div class="col-sm-6 center-block">
+                            <label for="discount">Give Back Amount*</label>
+                            @*<input type="text" name="discount"
+            class="form-control ng-class:{'error': reg.showNewRegistrationErrors && !reg.registrationForm.discount.$valid}"
+            placeholder="DISCOUNT"
+            id="discount"
+            ng-model="reg.item.discount"
+            required>*@
+                        </div>
+                    </div><!-- /.row -->
+                        <div class="row">
+                            <div class="col-sm-2 col-sm-offset-3">
+                                <select class="form-control ng-class:{'error': reg.showNewRegistrationErrors&& !reg.registrationForm.discount.$valid}"
+                                        name="discount"
+                                        id="discount"
+                                        ng-model="reg.item.discount"
+                                        required>
+
+
+                                    <option value="">Give Back</option>
+                                    <option value="1">10%</option>
+                                    <option value="2">15%</option>
+                                    <option value="3">20%</option>
+                                    <option value="4">25%</option>
+                                    <option value="5">30%</option>
+                                    <option value="6">40%</option>
+                                    <option value="7">50%</option>
+
+                                </select>
+
+                                <div role="alert" class="help-inline error">
+                                    <span class="error" ng-show="reg.showNewRegistrationErrors && reg.registrationForm.discount.$error.required">Give back amount is required</span>
+                                </div>
+                            </div><!-- /.col -->
+                    </div><!-- /.row -->
+
+                    <div class="row">
+                        <div class="col-sm-6 center-block">
+                            <label for="slug">Replicated Site</label>
+                            <input type="text" name="slug"
+                                   class="form-control ng-class:{'error': reg.showNewRegistrationErrors && !reg.registrationForm.slug.$valid}"
+                                   placeholder="..."
+                                   id="slug"
+                                   ng-model="reg.item.slug">
+
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+
+                   
+
+                    <div class="row" style="padding-bottom:30px;">
+                        <div class="col-sm-3 col-sm-offset-3">
+                            <button type="submit" id="cmdBackReg" class="btn btn-success">Back</button>
+                            @*<a class="btn-lg btn-info" role="button" ng-href="/register/merchantregistration#/">back</a>*@
+                        </div>
+                        <div class="col-sm-3 ">
+                            <button type="submit" id="cmdAddReg" class="btn btn-success">Next</button>
+                            @*<a class="btn-lg btn-info" role="button" ng-href="/register/merchantregistration#/creditcard">Next</a>*@
+                        </div>
+                    </div>
+
+                    <div class="col-sm-offset-3">
+                        <div id="map-canvas"></div>
+                    </div>
+                    <div class="hidden">
+                        <input type="text" name="longitude" ng-model="reg.item.longitude" />
+                        <input type="text" name="latitude" ng-model="reg.item.latitude" />
+                    </div>
+
+                    
+                </div><!--/CONTAINER-->
+            
+        </form>
+    </section>
+</script>
+
+<!--=============================END REGISTRATION=======================================-->
+<!--================================PAYMENT===========================================-->
+
+<script type="text/ng-template" id="/merch/payment" >
+    <div class="container" ng-controller="paymentController" id="paymentController" >
+        <h6>Payment Options</h6>
+        <tabset>
+
+            <!--=============================CREDIT CARD REGISTRATION=======================================-->
+
+            <tab heading="Credit Info">
+                @*<script type="text/ng-template" id="/merch/creditcard">*@
+                <section id="creditCardCtrl" @*ng-controller="creditCardController as credit"*@>
+                    <form id="creditCardForm" class="forms" style="padding-top:30px; padding-bottom:35px;" name="pay.creditCardForm" @*ng-submit="credit.creditClick()"*@ novalidate>
+                       
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-sm-6 form-group center-block">
+                                        <h3>Page 3 of 3: Payment Information</h3>
+
+                                        <label for="cardHolder">Cardholder Name*</label>
+                                        <input type="text" id="cardHolder"
+                                               name="cardHolder"
+                                               class="form-control ng-class:{'error': pay.showNewPayErrors && !pay.creditCardForm.cardHolder.$valid}"
+                                               placeholder="CARDHOLDER NAME"
+                                               ng-model="pay.item.cardHolderName"
+                                               required>
+
+                                        <div role="alert" class="help-inline error">
+                                            <span class="error" ng-show="pay.showNewPayErrors && pay.creditCardForm.cardHolder.$error.required">Cardholder name is required</span>
+
+                                        </div>
+
+                                    </div><!-- /.col -->
+                                </div><!-- /.row -->
+
+
+                                <div class="row">
+                                    <div class="col-sm-6 center-block">
+                                        <label for="creditCardNumber">Credit Card Number*</label>
+                                        <input type="text" id="creditCardNumber"
+                                               name="creditCardNumber"
+                                               class="form-control ng-class:{'error': pay.showNewPayErrors && !pay.creditCardForm.creditCardNumber.$valid}"
+                                               placeholder="CREDIT CARD NUMBER"
+                                               ng-model="pay.item.creditCardNumber"
+                                               ng-maxlength="19"
+                                               ng-minlength="12"
+                                               required>
+
+                                        <div role="alert" class="help-inline error">
+                                            <span class="error" ng-show="pay.showNewPayErrors && pay.creditCardForm.creditCardNumber.$error.required">Credit card number is required</span>
+                                            <span class="error" ng-show="pay.showNewPayErrors && pay.creditCardForm.creditCardNumber.$error.maxlength">Credit card numbere must be no more than 19 didgits long</span>
+                                            <span class="error" ng-show="pay.showNewPayErrors && pay.creditCardForm.creditCardNumber.$error.minlength">Credit card number must be at least 12 didgits long</span>
+                                        </div>
+
+                                    </div><!-- /.col -->
+
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-2 col-sm-offset-3">
+                                        <label for="securityCode">Security Code*</label>
+                                        <input type="text" id="securityCode"
+                                               name="securityCode"
+                                               class="form-control ng-class:{'error': pay.showNewPayErrors && !pay.creditCardForm.securityCode.$valid}"
+                                               placeholder="SECURITY CODE"
+                                               ng-model="pay.item.securityCode"
+                                               ng-maxlength="4"
+                                               ng-minlength="3"
+                                               required>
+
+                                        <div role="alert" class="help-inline error">
+                                            <span class="error" ng-show="pay.showNewPayErrors && pay.creditCardForm.securityCode.$error.required">Security code is required</span>
+                                            <span class="error" ng-show="pay.showNewPayErrors && pay.creditCardForm.securityCode.$error.maxlength">Security code must be no more than 4 didgits long</span>
+                                            <span class="error" ng-show="pay.showNewPayErrors && pay.creditCardForm.securityCode.$error.minlength">Security code must be at least 3 didgits long</span>
+                                        </div>
+
+                                    </div><!-- /.col -->
+                                </div><!-- /.row -->
+                                <div class="row">
+                                    <div class="col-sm-6 center-block">
+                                        <label for="expDate">Expiration Date*</label>
+                                    </div>
+                                </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-xs-2 col-sm-offset-3">
+                                                    <select class="form-control ng-class:{'error': pay.showNewPayErrors && !pay.creditCardForm.expiryMonth.$valid}"
+                                                            name="expiryMonth"
+                                                            id="expiryMonth"
+                                                            placeholder="MONTH"
+                                                            ng-model="pay.item.expiryMonth"
+                                                            required>
+
+
+                                                        <option value="">Month</option>
+                                                        <option value="1">Jan-01</option>
+                                                        <option value="2">Feb-02</option>
+                                                        <option value="3">Mar-03</option>
+                                                        <option value="4">Apr-04</option>
+                                                        <option value="5">May-05</option>
+                                                        <option value="6">June-06</option>
+                                                        <option value="7">July-07</option>
+                                                        <option value="8">Aug-08</option>
+                                                        <option value="9">Sept-09</option>
+                                                        <option value="10">Oct-10</option>
+                                                        <option value="11">Nov-11</option>
+                                                        <option value="12">Dec-12</option>
+                                                    </select>
+                                                    <div role="alert" class="help-inline error">
+                                                        <span class="error" ng-show="pay.showNewPayErrors && pay.creditCardForm.expiryMonth.$error.required">Expiring month is required</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-2 ">
+                                                    <select class="form-control ng-class:{'error': pay.showNewPayErrors && !pay.creditCardForm.expiryYear.$valid}"
+                                                            name="expiryYear"
+                                                            id="expiryYear"
+                                                            placeholder="YEAR"
+                                                            ng-model="pay.item.expiryYear"
+                                                            required>
+
+                                                        <option value="">Year</option>
+                                                        <option value="2015">2015</option>
+                                                        <option value="2016">2016</option>
+                                                        <option value="2017">2017</option>
+                                                        <option value="2018">2018</option>
+                                                        <option value="2019">2019</option>
+                                                        <option value="2020">2020</option>
+                                                        <option value="2021">2021</option>
+                                                        <option value="2022">2022</option>
+                                                        <option value="2023">2023</option>
+                                                        <option value="2024">2024</option>
+                                                        <option value="2025">2025</option>
+                                                    </select>
+                                                    <div role="alert" class="help-inline error">
+                                                        <span class="error" ng-show="pay.showNewPayErrors && pay.creditCardForm.expiryYear.$error.required">Expiring year is required</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    
+                                
+
+                                <div class="row">
+                                    <div class="col-sm-12 center-block" style="padding-bottom:20px; padding-top:30px;">
+                                        <p style="text-align: center; font-size:smaller">By clicking Register, you are agreeing to the <a>Terms &amp; Conditions</a>.</p>
+                                    </div><!-- /.col -->
+                                </div><!-- /.row-->
+
+                                @*<div class="row">
+                        <div class="col-sm-3">
+                            <button type="submit" id="cmdBackCredit" class="btn btn-success">Back</button>
+                            @*<a class="btn-lg btn-info" role="button" ng-href="/register/merchantregistration#/registration">back</a>
+                        </div>
+                        <div class="col-sm-3">
+                            <button type="submit" id="cmdAddCredit" class="btn btn-success">Next</button>
+                            @*<a class="btn-lg btn-info" role="button" ng-href="/register/merchantregistration#/banking">Next</a>
+                        </div>
+                    </div>*@
+                            </div> <!--/CONTAINER-->
+                        
+                    </form>
+
+                </section>
+            </tab>
+            @*</script>*@
+
+            <!--=============================END CREDIT CARD REGISTRATION=======================================-->
+            <!--=============================BANKING REGISTRATION=======================================-->
+
+            <tab heading="Banking Info">
+                @*<script type="text/ng-template" id="/merch/banking">*@
+                <section id="bankingCtrl" @*ng-controller="bankingController as bank"*@>
+                    <form id="bankingForm" class="forms" style="padding-top:30px; padding-bottom:35px;" name="bank.bankingForm" @*ng-submit="bank.bankingClick()"*@ novalidate>
+                        
+                            <div class="container">
+                                <div class="row">
+
+                                    <div class="row">
+                                        <div class="col-sm-6 form-group center-block">
+                                            <h3>Page 3 of 3: Payment Information</h3>
+
+                                            <label for="bankName">Name of Bank*</label>
+                                            <input type="text" name="bankName"
+                                                   class="form-control ng-class:{'error': bank.showNewPayErrors && !bank.bankingForm.bankName.$valid}"
+                                                   id="bankName"
+                                                   placeholder="BANK NAME"
+                                                   ng-model="bank.item.bankName"
+                                                   required>
+
+                                            <div role="alert" class="help-inline error">
+                                                <span class="error" ng-show="bank.showNewPayErrors && bank.bankingForm.bankName.$error.required">Merchant phone number is required</span>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-sm-6 center-block">
+                                            <label for="routingNumber">Routing Number*</label>
+                                            <input type="text" name="routingNumber"
+                                                   class="form-control ng-class:{'error': bank.showNewPayErrors && !bank.routingNumber.routingNumber.$valid}"
+                                                   id="routingNumber"
+                                                   placeholder="ROUTING NUMBER"
+                                                   ng-model="bank.item.routingNumber"
+                                                   ng-maxlength="9"
+                                                   ng-minlength="9"
+                                                   required>
+
+                                            <div role="alert" class="help-inline error">
+                                                <span class="error" ng-show="bank.showNewPayErrors && bank.bankingForm.routingNumber.$error.required">Merchant phone number is required</span>
+                                                <span class="error" ng-show="bank.showNewPayErrors && bank.bankingForm.routingNumber.$error.minlength">Merchant phone must be at least 10 didgits long</span>
+                                                <span class="error" ng-show="bank.showNewPayErrors && bank.bankingForm.routingNumber.$error.maxlength">Merchant phone must be no more than 15 didgits long</span>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-sm-6 center-block">
+                                            <label for="accountNumber">Account Number*</label>
+                                            <input type="text" name="accountNumber"
+                                                   class="form-control ng-class:{'error': bank.showNewPayErrors && !bank.bankingForm.accountNumber.$valid}"
+                                                   id="accountNumber"
+                                                   placeholder="ACCOUNT NUMBER"
+                                                   ng-model="bank.item.accountNumber"
+                                                   required>
+
+                                            <div role="alert" class="help-inline error">
+                                                <span class="error" ng-show="bank.showNewPayErrors && bank.bankingForm.accountNumber.$error.required">Merchant phone number is required</span>
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+
+                                    <div class="row">
+                                        <div class="col-sm-12 center-block" style="padding-bottom:20px; padding-top:30px;">
+                                            <p style="text-align: center; font-size:smaller">By clicking Register, you are agreeing to the <a>Terms &amp; Conditions</a>.</p>
+                                        </div><!-- /.col -->
+                                    </div><!-- /.row-->
+                                    @*<div class="row">
+                                            <div class="col-sm-3">
+                                                <button type="submit" id="cmdBackBank" class="btn btn-success">Back</button>
+                                                @*<a class="btn-lg btn-info" role="button" ng-href="/register/merchantregistration#/creditcard">back</a>
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <button type="submit" id="cmdAddBank" class="btn btn-success">Submit</button>
+                                                @*<a class="btn-lg btn-info" role="button" ng-href="/merchant/dashboard">submit</a>
+                                            </div>
+                                        </div>*@
+                                </div><!-- /.row -->
+                            </div><!--/CONTAINER-->
+                       
+                    </form>
+                </section>
+                @*</script>*@
+            </tab>
+
+            <!--=============================END BANKING REGISTRATION=======================================-->
+        </tabset>
+        <div class="row col-sm-offset-3" style="padding-bottom:20px;">
+            <div class="col-sm-3 ">
+                <a class="btn btn-md" role="button" ng-click="pay.back()">back</a>
+            </div>
+            <div class="col-sm-3 ">
+                <a class="btn btn-md" role="button" ng-click="pay.submit()">Submit</a>
+            </div>
+        </div>
+    </div><!--container-->
+</script>
+
+
+<!-- ============================================================= SECTION – CONTACT FORM : END ============================================================= -->
+
+
