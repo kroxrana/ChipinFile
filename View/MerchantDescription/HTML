@@ -1,0 +1,436 @@
+@model Sabio.Web.Models.ViewModels.ItemViewModel<Guid?>
+@{
+    ViewBag.Title = "MerchantDescription";
+    Layout = "~/Views/Shared/_ChipinDashboardLayout.cshtml";
+}
+
+
+
+
+<!-- ============================================================= MAIN ============================================================= -->
+
+
+
+<style>
+    #map-canvas {
+        width: 75%;
+        height: 500px;
+        background-color: #CCC;
+    }
+
+    /*#panel {
+        position: absolute;
+        top: 5px;
+        left: 80%;
+        margin-left: -180px;
+        z-index: 5;
+        background-color: #fff;
+        padding: 5px;
+        border: 1px solid #999;
+      }*/
+    #descriptionBox{
+        height: 86px;
+        width: 1041px;
+        border-color: #b9c3cd;
+    }
+
+</style>
+
+
+
+<!-- ============================================================= SECTION – CAROUSELS ============================================================= -->
+
+
+
+<section id="carousels" class="light-color">
+    <div class="container inner ">
+        <h2>Photos</h2>
+        <p>You can upload as many as 5 photos</p>
+
+        @Html.Partial("../Shared/_UploadPhotosPartial")
+
+        @*<div class="row">
+                <div class="col-md-8 col-sm-9 center-block text-center">
+                    <header></header>
+                </div><!-- /.col -->
+            </div><!-- /.row -->
+
+            <div class="row">
+                <div class="col-sm-12 inner-top-md">
+                    <div id="owl-videos" class="owl-carousel owl-outer-nav owl-ui-md owl-item-gap">
+
+                        <div class="item">
+                            <figure>
+
+                                <div class="icon-overlay icn-link">
+                                    <a href="slider-carousel.html"><img  src="http://www.destinationmainstreets.com/massachusetts/_images/provincetown-massachusetts-13.jpg" alt=""></a>
+                                </div><!-- /.icon-overlay -->
+
+                                <figcaption class="bordered no-top-border">
+                                    <div class="info">
+                                        <h4><a href="slider-carousel.html">Merchant</a></h4>
+                                        <p>Photo</p>
+                                    </div><!-- /.info -->
+                                </figcaption>
+
+                            </figure>
+                        </div><!-- /.item -->
+
+                        <div class="item">
+                            <figure>
+
+                                <div class="icon-overlay icn-link">
+                                    <a href="slider-carousel.html"><img  src="http://www.st-barths.com/eden-rock/uploads/images/Gallery/restaurant/Restaurant-(3).jpg" alt=""></a>
+                                </div><!-- /.icon-overlay -->
+
+                                <figcaption class="bordered no-top-border">
+                                    <div class="info">
+                                        <h4><a href="slider-carousel.html">Merchant</a></h4>
+                                        <p>Photo</p>
+                                    </div><!-- /.info -->
+                                </figcaption>
+
+                            </figure>
+                        </div><!-- /.item -->
+
+                        <div class="item">
+                            <figure>
+
+                                <div class="icon-overlay icn-link">
+                                    <a href="slider-carousel.html"><img  src="http://www.astorwines.com/images/store/store.jpg" alt=""></a>
+                                </div><!-- /.icon-overlay -->
+
+                                <figcaption class="bordered no-top-border">
+                                    <div class="info">
+                                        <h4><a href="slider-carousel.html">Merchant</a></h4>
+                                        <p>Photo</p>
+                                    </div><!-- /.info -->
+                                </figcaption>
+
+                            </figure>
+                        </div><!-- /.item -->
+
+                        <div class="item">
+                            <figure>
+
+                                <div class="icon-overlay icn-link">
+                                    <a href="slider-carousel.html"><img  src="http://reboot.rebootillinois.netdna-cdn.com/wp-content/uploads/2015/03/restaurant-cook-800x667.jpg" alt=""></a>
+                                </div><!-- /.icon-overlay -->
+
+                                <figcaption class="bordered no-top-border">
+                                    <div class="info">
+                                        <h4><a href="slider-carousel.html">Merchant</a></h4>
+                                        <p>Photo</p>
+                                    </div><!-- /.info -->
+                                </figcaption>
+
+                            </figure>
+                        </div><!-- /.item -->
+
+                        <div class="item">
+                            <figure>
+
+                                <div class="icon-overlay icn-link">
+                                    <a href="slider-carousel.html"><img class="img-responsive" src="http://www.marbellacaferestaurant.com/uploads/1/1/7/4/11749174/2000489_orig.jpg" alt=""></a>
+                                </div><!-- /.icon-overlay -->
+
+                                <figcaption class="bordered no-top-border">
+                                    <div class="info">
+                                        <h4><a href="slider-carousel.html">Merchant</a></h4>
+                                        <p>Photo</p>
+                                    </div><!-- /.info -->
+                                </figcaption>
+
+                            </figure>*@
+        @*</div><!-- /.item -->
+
+
+
+                    </div><!-- /.owl-carousel -->
+                </div><!-- /.col -->
+
+            </div><!-- /.row -->*@
+
+        @*<button type="button" class="btn btn-teal " id="photoSubmit">Upload Photos</button>*@
+
+
+    </div><!--container-->
+
+</section>
+
+
+
+<!-- ============================================================= SECTION – CAROUSELS : END ============================================================= -->
+<!-- ============================================================= DESCRIPTION ============================================================= -->
+<div class="container inner" id="addInfoSection">
+    <section data-ng-controller="merchantController as merchantInfo" id="merchantController" ng-cloak>
+        <form id="descriptionForm" name="merchantInfo.descriptionForm" ng-submit="merchantInfo.submitDescription()" novalidate>
+        <div id="descriptionSection">
+            <div class="row"><!--Success and Error Messages-->
+                <div id="msgWindow">
+                    <div class="col-sm-4 col-sm-offset-3" data-ng-show="merchantInfo.hasSuccess" style="opacity:1">
+                        <div class="alert text-center ng-class:{'alert-success': merchantInfo.hasSuccess}">{{merchantInfo.msgList}}</div>                     
+                    </div>
+                </div>
+
+                <div id="msgWindow">
+                    <div class="col-sm-4 col-sm-offset-3" data-ng-show="merchantInfo.hasError" style="opacity:1">
+                        <div class="alert text-center ng-class:{'alert-danger': merchantInfo.hasError}">{{merchantInfo.msgList}}</div>                    
+                    </div>
+                </div>
+
+            </div>
+            <h2>Description</h2>
+            <p>This will appear on your merchant page</p>
+            <label for="descriptionBox">Description</label>
+            <textarea name="descriptionBox" class="form-control ng-class:{'error': merchantInfo.showNewMerchantErrors && !merchantInfo.merchantForm.descriptionBox.$valid}"
+                      ng-model="merchantInfo.item.description" ng-maxlength="750"
+                      id="descriptionBox" placeholder="Briefly describe your business and its best features here"></textarea>
+
+            <div role="alert" class="help-inline error">
+                
+                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.descriptionBox.$error.required">Description is required</span> 
+                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.descriptionBox.$error.maxlength">Too long! Description must be 750 characters or less</span>
+            </div>
+           
+            <button type="submit" id="submitDescription" class="btn btn-success">Save Changes</button>           
+        </div><!--#description-->
+        </form>
+
+            <!-- ============================================================= SECTION – CONTACT FORM ============================================================= -->
+        @*<div id="loader" style="line-height: 115px; text-align: center;">
+              <img alt="activity indicator" class="mr-15" src="~/content/blankon/global/img/loader/general/3.gif"/>
+        </div>*@
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="alert " id="msgWindow"></div>
+            </div>
+        </div>
+            <div id="merchantInfoSection">
+
+                <h2>Additional Information</h2>
+                <p>This will appear on your merchant page</p>
+
+                <form id="merchantForm" name="merchantInfo.merchantForm" ng-submit="merchantInfo.submitMerchant()" novalidate>
+
+                    @*<form id="additionalMerchantInfoForm" class="forms" action="contact.php" method="post">*@
+
+                    <div class="row form-group">
+                        <div class="col-md-6">
+                            <label for="nameBox">Merchant Name</label>
+                            <input type="text" name="nameBox" class="form-control ng-class:{'error': merchantInfo.showNewMerchantErrors && !merchantInfo.merchantForm.nameBox.$valid}"
+                                   ng-model="merchantInfo.item.name" ng-minlength="2" ng-maxlength="50" required
+                                   id="nameBox" placeholder="Merchant Name">
+
+                            <div role="alert" class="help-inline error">
+                               
+                                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.nameBox.$error.required">Merchant Name is required</span>
+                                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.nameBox.$error.minlength">Too short! Address must be at least 2 characters</span>
+                                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.nameBox.$error.maxlength">Too long! Address must be 50 characters or less</span>
+                            </div>
+
+                            <label for="contactNameBox">Contact First Name</label>
+                            <input type="text" name="contactNameBox" class="form-control ng-class:{'error': merchantInfo.showNewMerchantErrors && !merchantInfo.merchantForm.contactNameBox.$valid}"
+                                   ng-model="merchantInfo.item.contactName" ng-minlength="2" ng-maxlength="50" required
+                                   id="contactNameBox" placeholder="Contact Name">
+
+                            <div role="alert" class="help-inline error">
+                               
+                                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.contactNameBox.$error.required">Contact Name is required</span> 
+                                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.contactNameBox.$error.minlength">Too short! Address must be at least 2 characters</span>
+                                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.contactNameBox.$error.maxlength">Too long! Address must be 50 characters or less</span>
+                            </div>
+
+                            <label for="contactNameBox">Contact Last Name</label>
+                            <input type="text" name="contactLastNameBox" class="form-control ng-class:{'error': merchantInfo.showNewMerchantErrors && !merchantInfo.merchantForm.contactLastNameBox.$valid}"
+                                   ng-model="merchantInfo.item.contactLastName" ng-minlength="2" ng-maxlength="50" required
+                                   id="contactLastNameBox" placeholder="Contact Last Name">
+
+                            <div role="alert" class="help-inline error">
+                               
+                                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.contactLastNameBox.$error.required">Contact Last Name is required</span> 
+                                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.contactLastNameBox.$error.minlength">Too short! Must be at least 2 characters</span>
+                                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.contactLastNameBox.$error.maxlength">Too long! Must be 50 characters or less</span>
+                            </div>
+
+                            <label for="contactPhoneBox">Contact Phone</label>
+                            <input type="text" name="contactPhoneBox" class="form-control ng-class:{'error': merchantInfo.showNewMerchantErrors && !merchantInfo.merchantForm.contactPhoneBox.$valid}"
+                                   ng-model="merchantInfo.item.contactPhone" ng-minlength="10" ng-maxlength="15" required
+                                   id="contactPhoneBox" placeholder="Enter Phone Number">
+
+                            <div role="alert" class="help-inline error">
+                               
+                                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.contactPhoneBox.$error.required">Phone number is required</span> 
+                                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.contactPhoneBox.$error.minlength">Too short! Phone number must be at least 10 characters</span>
+                                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.contactPhoneBox.$error.maxlength">Too long! Phone number must be 15 characters or less</span>
+                            </div>
+
+                            <label for="addressBox">Address</label>
+                            <input type="text" name="addressBox" class="form-control ng-class:{'error': merchantInfo.showNewMerchantErrors && !merchantInfo.merchantForm.addressBox.$valid}"
+                                   ng-model="merchantInfo.item.address.address1" ng-minlength="2" ng-maxlength="50" required
+                                   id="addressBox" placeholder="Enter Street Address">
+
+                            <div role="alert" class="help-inline error">
+                                
+                                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.addressBox.$error.required">Address is required</span> 
+                                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.addressBox.$error.minlength">Too short! Address must be at least 2 characters</span>
+                                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.addressBox.$error.maxlength">Too long! Address must be 50 characters or less</span>
+                            </div>
+
+                            <label for="cityBox">City</label>
+                            <input type="text" name="cityBox" class="form-control ng-class:{'error': merchantInfo.showNewMerchantErrors && !merchantInfo.merchantForm.cityBox.$valid}"
+                                   ng-model="merchantInfo.item.address.city" ng-minlength="2" ng-maxlength="50" required
+                                   id=" citybox" placeholder="Enter City">
+
+                            <div role="alert" class="help-inline error">
+                                
+                                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.cityBox.$error.required">City is required</span> 
+                                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.cityBox.$error.minlength">Too short! City must be at least 2 characters</span>
+                                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.cityBox.$error.maxlength">Too long! City must be 50 characters or less</span>
+                            </div>
+
+                            <label for="stateBox">State</label>
+                            <select placeholder="STATE"
+                                    name="stateBox"
+                                    class="form-control input-sm ng-class:{'error': merchantInfo.showNewMerchantErrors && !merchantInfo.merchantForm.stateBox.$valid}"
+                                    ng-model="merchantInfo.item.address.state"
+                                    @*reg.states tells where you are pulling from. state declares all objects in that object as states. then everything
+                                        else is a property of a state*@
+                                    ng-options="states.stateProvinceCode for states in merchantInfo.states track by states.stateProvinceId"
+                                    ng-init="merchantInfo.item.address.state"
+                                    required></select>
+
+                            <div role="alert" class="help-inline">
+                                <label class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.stateBox.$error.required">State is required</label>
+                            </div>
+                            @*
+                            <input type="text" name="stateBox" class="form-control ng-class:{'error': merchantInfo.showNewMerchantErrors && !merchantInfo.merchantForm.stateBox.$valid}"
+                                   ng-model="merchantInfo.item.address.state" ng-minlength="2" ng-maxlength="25" required
+                                   id="stateBox" placeholder="Enter State">
+
+                            <div role="alert" class="help-inline error">
+                                
+                                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.stateBox.$error.required">State is required</span> 
+                                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.stateBox.$error.minlength">Too short! State must be at least 2 characters</span>
+                                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.stateBox.$error.maxlength">Too long! State must be 25 characters or less</span>
+                            </div>*@
+
+                            <label for="zipBox">Zip Code</label>
+                            <input type="text" name="zipBox" class="form-control ng-class:{'error': merchantInfo.showNewMerchantErrors && !merchantInfo.merchantForm.zipBox.$valid}"
+                                   ng-model="merchantInfo.item.address.zip" minlength="5" maxlength="5" required
+                                   id="zipBox" placeholder="Enter Zip">
+
+                            <div role="alert" class="help-inline error">
+                                
+                                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.zipBox.$error.required">Zip Code is required</span>
+                                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.zipBox.$error.number">Zip Code must be a number</span>
+                                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.zipBox.$error.minlength">Too short! Zip Code must be at least 5 characters</span>
+                                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.zipBox.$error.maxlength">Too long! Zip Code must be 5 characters or less</span>
+                            </div>
+
+                            <label for="phoneBox">Phone</label>
+                            <input type="text" name="phoneBox" class="form-control ng-class:{'error': merchantInfo.showNewMerchantErrors && !merchantInfo.merchantForm.phoneBox.$valid}"
+                                   ng-model="merchantInfo.item.phone" ng-minlength="10" ng-maxlength="15" required
+                                   id="phoneBox" placeholder="Enter Phone Number">
+
+                            <div role="alert" class="help-inline error">
+                               
+                                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.phoneBox.$error.required">Phone number is required</span> 
+                                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.phoneBox.$error.minlength">Too short! Phone number must be at least 10 characters</span>
+                                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.phoneBox.$error.maxlength">Too long! Phone number must be 15 characters or less</span>
+                            </div>
+
+                            <label for="hoursBox">Hours</label>
+                            <textarea type="text" name="hoursBox" class="form-control ng-class:{'error': merchantInfo.showNewMerchantErrors && !merchantInfo.merchantForm.hoursBox.$valid}"
+                                      ng-model="merchantInfo.item.hours" ng-minlength="5" required
+                                      id="hoursBox" placeholder="Enter Merchant Hours"></textarea>
+
+                            <div role="alert" class="help-inline error">
+                               
+                                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.hoursBox.$error.required">Hours is required</span> 
+                                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.hoursBox.$error.minlength">Too short! Hours must be at least 5 characters</span>
+
+                            </div>
+
+                            <label for="websiteBox">Website</label>
+                            <input type="url" name="websiteBox" class="form-control ng-class:{'error': merchantInfo.showNewMerchantErrors && !merchantInfo.merchantForm.websiteBox.$valid}"
+                                   ng-model="merchantInfo.item.url" ng-minlength="5" required
+                                   id="websiteBox" placeholder="http://www.chipinworld.com">
+
+                            <div role="alert" class="help-inline error">
+                               
+                                @*<span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.websiteBox.$error.required">Website is required</span>*@
+                                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.websiteBox.$error.url"> Website must be in valid URL format (http://www.chipinworld.com)</span>
+                                @*<span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.websiteBox.$error.minlength">Too short! Address must be 5 characters or more</span>*@
+                            </div>
+                            <label for="discount">Discount</label>
+                            <div class="form-group">
+                                <div class="col-md-4">
+                                    <select type="text"
+                                            id="discount"
+                                            name="discount"
+                                            ng-model="merchantInfo.item.discount"
+                                            class="form-control"
+                                            placeholder="Discount"
+                                            required>                                        
+                                        <option value="5">5%</option>
+                                        <option value="10">10%</option>
+                                        <option value="15">15%</option>
+                                        <option value="20">20%</option>
+                                        <option value="25">25%</option>
+                                        <option value="30">30%</option>
+                                        <option value="35">35%</option>
+                                        <option value="40">40%</option>
+                                        <option value="45">45%</option>
+                                        <option value="50">50%</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div role="alert" class="help-inline error">
+                                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.discount.$error.required">Please select an amount.</span>
+                            </div>  
+                            @*<label for="discount">Discount</label>
+                            <input type="url" name="discount" class="form-control ng-class:{'error': merchantInfo.showNewMerchantErrors && !merchantInfo.merchantForm.discount.$valid}"
+                                   ng-model="merchantInfo.item.url" ng-minlength="5" required
+                                   id="discount" placeholder="http://www.chipinworld.com">
+
+                            <div role="alert" class="help-inline error">
+                                
+                                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.discount.$error.required">Website is required</span> 
+                                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.discount.$error.url"> Website must be in valid URL format (http://www.chipinworld.com)</span>
+                                <span class="error" ng-show="merchantInfo.showNewMerchantErrors && merchantInfo.merchantForm.discount.$error.minlength">Too short! Address must be 5 characters or more</span>
+                            </div>*@
+
+
+
+                            @*<input type="hidden" name="latitude"
+                                   id="latitude" />
+                            <input type="hidden" name="longitude"
+                                   id="longitude" />*@
+
+                            <button type="submit" id="cmdAddMerchant" class="btn btn-success" style="margin: -9px 0 0 135px;">Save Changes</button>
+                        <span><a href="#"></a></span>
+                            @*<button type="submit" class="btn btn-green btn-group-sm btn" id="addInfoSubmit">Save Changes</button>*@
+
+
+                        </div><!-- /.col  -->
+                        @*<div id="panel">
+                            <input id="address" type="text" value="Sydney, NSW">
+                            <input type="button" id="submit" value="Geocode">
+                        </div>*@
+                        <div class="col-md-6">
+                            <div id="map-canvas"></div>
+                        </div>
+                    </div>
+
+                </form>
+            </div>       
+    </section>
+
+    <!-- ============================================================= SECTION – CONTACT FORM : END ============================================================= -->
+
+
+</div> <!--container-->
+<!-- ============================================================= MAIN : END ============================================================= -->
+
+
