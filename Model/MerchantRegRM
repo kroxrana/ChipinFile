@@ -1,0 +1,43 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Web;
+
+namespace Sabio.Web.Models.Requests
+{
+    public class MerchantRegistration
+    {
+        [Required]
+        public string Address { get; set; }
+        [Required]
+        public string City { get; set; }
+        [Required]
+        public int StateProvinceId { get; set; }
+        [Required]
+        [MinLength(5)]
+        [MaxLength(5)]
+        public string Zip { get; set; }
+        [Required]
+        [MinLength(10)]
+        [MaxLength(15)]
+        public string Phone { get; set; }
+        [Required]
+        [Url]
+        [MinLength(5)]
+        public string url { get; set; }
+
+        //public MerchantCategoryModel Catagory { get; set; }
+        [Required]
+        public int Discount { get; set; }
+
+        public string Slug { get; set; }
+
+        [Required]
+        public Decimal Latitude { get; set; }
+        [Required]
+        public Decimal Longitude { get; set; }
+
+
+    }
+}
