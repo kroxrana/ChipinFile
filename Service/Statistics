@@ -1,0 +1,50 @@
+using Sabio.Web.Domain;
+using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Web;
+
+namespace Sabio.Web.Services
+{
+    public class StatisticsService : BaseService
+    {
+       public static BasicStats BasicCount()
+       {
+           BasicStats statistics = null;
+         
+           DataProvider.ExecuteNonQuery(GetConnection, "dbo.StatCount"
+               , inputParamMapper: delegate(SqlParameterCollection paramCollection)
+               {
+
+                   SqlParameter m = new SqlParameter("@TotalMerchants", System.Data.SqlDbType.Int);
+                   m.Direction = System.Data.ParameterDirection.Output;
+
+                   paramCollection.Add(m);
+
+                   SqlParameter p = new SqlParameter("@TotalMembers", System.Data.SqlDbType.Int);
+                   p.Direction = System.Data.ParameterDirection.Output;
+
+                   paramCollection.Add(p);
+
+                   SqlParameter o = new SqlParameter("@TotalOrganizations", System.Data.SqlDbType.Int);
+                   o.Direction = System.Data.ParameterDirection.Output;
+
+                   paramCollection.Add(o);
+
+
+               }
+               , returnParameters: delegate(SqlParameterCollection param)
+               {
+                   statistics = new BasicStats();
+                   //remove the statement from the initial service.
+                   statistics.TotalMerchants = Convert.ToInt32(param["@TotalMerchants"].Value);
+                   statistics.TotalMembers = Convert.ToInt32(param["@TotalMembers"].Value);
+                   statistics.TotalOrganizations = Convert.ToInt32(param["@TotalOrganizations"].Value);
+               });
+
+
+            return statistics;
+        }
+    }
+}
