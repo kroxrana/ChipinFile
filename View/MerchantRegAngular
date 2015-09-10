@@ -1,0 +1,746 @@
+@section scripts {
+    <script src="~/Scripts/sabio.services.register.js"></script>
+    <script src="~/Scripts/sabio.services.geo.js"></script>
+    <script src="~/Scripts/sabio.services.category.js"></script>
+<script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+<script type="text/javascript">
+    // This identifies your website in the createToken call below
+    Stripe.setPublishableKey('YOUR KEY HERE');
+    // ...
+</script>
+    <script type="text/javascript">
+
+        sabio.ng.app.module.config(function ($routeProvider, $locationProvider) {
+            $routeProvider
+              .when('/', {
+                  templateUrl: '/merch/initialreg',
+                  controller: 'initialRegController',
+                  controllerAs:"initial"
+              })
+              .when('/registration', {
+                  templateUrl: '/merch/registration',
+                  controller: 'registrationController',
+                  controllerAs: 'reg'
+              })
+              //.when('/creditcard', {
+              //    templateUrl: '/merch/creditcard',
+              //    controller: 'creditCardController'
+              //})
+              //.when('/banking', {
+              //    templateUrl: '/merch/banking',
+              //    controller: 'bankingController'
+            //});
+            .when('/payment', {
+                templateUrl: '/merch/payment',
+                controller: 'paymentController',
+                controllerAs: 'pay'
+            })
+
+            $locationProvider.html5Mode(false);
+        });
+
+
+
+        sabio.services.register.merchantServiceFactory = function ($baseService) {
+            var aRegisterObject = sabio.services.register;
+            var newRegisterService = $.extend(true, {}, aRegisterObject, $baseService);
+            return newRegisterService;
+        };
+
+        sabio.ng.addService(sabio.ng.app.module
+            , "$registerService"
+            , ["$baseService"]
+            , sabio.services.register.merchantServiceFactory);
+
+
+        sabio.services.register.formDataServiceFactory = function ($baseService) {
+
+            var svc = this;
+
+            $.extend(svc, $baseService);
+
+            svc.setInitialSubmit = _setInitialSubmit;
+            svc.setRegistrationSubmit = _setRegistrationSubmit;
+            svc.setCreditCardSubmit = _setCreditCardSubmit;
+            svc.setBankingSubmit = _setBankingSubmit;
+            svc.setBankToken = _setBankToken;
+            svc.setCreditToken = _setCreditToken;
+
+            svc.getTotalMerchData = _getTotalMerchData;
+
+            svc.formData = {};
+
+            function _setBankToken(bankToken) {
+                svc.formData.bankToken = bankToken;
+            };
+
+
+            function _setCreditToken(creditToken) {
+                svc.formData.creditToken = creditToken;
+            };
+
+
+            function _setInitialSubmit(initial) {
+
+
+                svc.formData.initial = initial;
+            };
+
+            function _setRegistrationSubmit(registration) {
+
+                //registration.state = registration.state.stateProvinceId;
+                registration.stateProvinceId = registration.stateProvinceId.stateProvinceId;
+
+                svc.formData.registration = registration;
+            }
+
+            function _setCreditCardSubmit(creditCard) {
+
+                svc.formData.creditCard = creditCard;
+            }
+
+            function _setBankingSubmit(banking) {
+
+                svc.formData.banking = banking;
+            }
+
+            function _getTotalMerchData() {
+
+                var encoded = svc.serializeCustom(svc.formData);
+
+                console.log("Serialized data", encoded);
+
+                return encoded;
+
+            }
+
+        };
+
+        sabio.ng.addService(sabio.ng.app.module
+            , "$formDataService"
+            , ["$baseService"]
+            , sabio.services.register.formDataServiceFactory);
+
+
+        sabio.services.register.initialRegControllerFactory = function (
+            $scope
+            , $baseController
+            , $route
+            , $location
+            , $formDataService) {
+
+            var vm = this;
+            vm.initialClick = _initialClick;
+
+            vm.$formDataService = $formDataService;
+            vm.$location = $location
+
+            vm.initialRegForm = null;
+            vm.showNewInitialRegErrors = false;
+
+            $.extend(vm, $baseController);
+            vm.$scope = $scope;
+        
+
+            vm.currentRequest = { originalPath: "/initialreg" }
+
+            if ($route.current) {
+                vm.currentRequest = $route.current;
+                vm.currentRequest.locals = {};
+            };
+            
+            function _initialClick() {
+                vm.showNewInitialRegErrors = true;
+
+                if (vm.initialRegForm.$valid) {
+
+                    var initial = {};
+                    initial.name = vm.item.name;
+                    initial.contactName = vm.item.contactName;
+                    initial.contactLastName = vm.item.contactLastName;
+                    initial.contactPhone = vm.item.contactPhone;
+                    initial.titlePosition = vm.item.titlePosition;
+                    initial.email = vm.item.email;
+                    initial.password = vm.item.password;
+                    initial.passwordConfirm = vm.item.passwordConfirm;
+                    initial.pin = vm.item.pin;
+
+
+                    vm.$formDataService.setInitialSubmit(initial);
+
+                    console.log(initial);
+
+                    //window.location.href = "/register/merchantregistration#/registration";
+
+                    vm.$location.path("/registration");
+
+                }
+            }
+
+        }
+
+
+        sabio.ng.addController(sabio.ng.app.module
+            , "initialRegController"
+            , ['$scope', '$baseController', '$route', "$location", "$formDataService"]
+            , sabio.services.register.initialRegControllerFactory);
+
+
+
+        sabio.services.merchGeoFactory = function ($baseService) {
+            var aMerchantObject = sabio.services.geo;
+            var newMerchantProfileService = $.extend(true, {}, aMerchantObject, $baseService);
+            return newMerchantProfileService;
+        };
+
+        sabio.ng.addService(sabio.ng.app.module
+               , "$merchantGeoService"
+               , ["$baseService"]
+               , sabio.services.merchGeoFactory);
+
+        sabio.services.merchantCategoryFactory = function ($baseService) {
+            var aMerchantObject = sabio.services.category;
+            var newMerchantCategoryService = $baseService.merge(true, {}, aMerchantObject, $baseService);
+            return newMerchantCategoryService;
+        };
+
+        sabio.ng.addService(sabio.ng.app.module
+               , "$merchantCategoryService"
+               , ["$baseService"]
+               , sabio.services.merchantCategoryFactory);
+
+
+        sabio.services.register.registrationControllerFactory = function (
+           $scope
+           , $baseController
+           , $route
+           , $location
+           , $formDataService
+           , $merchantGeoService
+           , $merchantCategoryService) {
+
+            var vm = this;
+            vm.item = null;
+            
+            vm.states = null;
+
+            vm.$formDataService = $formDataService;
+            vm.$merchantGeoService = $merchantGeoService;
+            vm.$merchantCategoryService = $merchantCategoryService;
+            
+            vm.$location = $location
+            vm.initializeMap = _initializeMap;
+            vm.codeAddress = _codeAddress;
+           
+            vm.setMapMarker = _setMapMarker;
+            vm.onGeoSuccess = _onGeoSuccess;
+            vm.onGeoError = _onGeoError;
+            
+            vm.getStates = _getStates;
+            vm.stateSuccess = _stateSuccess;
+            vm.stateError = _stateError;
+           
+            vm.regClick = _regClick;
+
+            vm.registrationForm = null;
+            vm.getCategories = _getCategories;
+            vm.categorySuccess = _categorySuccess;
+            vm.categoryError = _categoryError;
+
+            $.extend(vm, $baseController);
+            vm.$scope = $scope;
+       
+            vm.showNewRegistrationErrors = false;
+            
+            vm.notify = vm.$formDataService.getNotifier($scope);
+
+            vm.currentRequest = { originalPath: "/registration" }
+
+
+            vm.getCategories();
+
+            function _getCategories() {
+                console.log("get categories!");
+                vm.$merchantCategoryService.selectType(1, vm.categorySuccess, vm.categoryError);
+            }
+
+            function _categorySuccess(data, status, xhr) {
+                vm.notify(function () {
+                    vm.categories = data.items;
+                    console.log("vm.categories: ", vm.categories);
+
+                });
+            };
+
+            function _categoryError() {
+                console.log("category Error");
+            }
+
+
+            vm.getStates();
+
+          
+            function _getStates(onSuccess, onError) {
+
+                vm.$merchantGeoService.getGeo(vm.stateSuccess, vm.stateError);
+                //console.log("These are the states");
+
+            }
+
+            function _stateSuccess(data, status, xhr) {
+                vm.notify(function () {
+                    vm.states = data.items;
+                    vm.states.unshift({ stateProvinceCode: "STATE" });
+                   // console.log("this is vm.states: ", vm.states);
+                });
+            }
+
+            function _stateError() {
+                console.log("geo state error");
+            }
+
+
+            vm.initializeMap();
+
+            function _initializeMap() {
+                vm.geocoder = new google.maps.Geocoder();
+                var mapCanvas = $("#map-canvas");
+                var latlng = new google.maps.LatLng(34.048591, -118.165874);
+                var mapOptions = {
+                    zoom: 12,
+                    center: latlng,
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                }
+                vm.map = new google.maps.Map((mapCanvas[0]), mapOptions);
+            }
+
+            function _codeAddress(address) {
+                //console.log("code address firing results: " + address);
+                vm.geocoder.geocode({ "address": address }, vm.onGeoSuccess);
+            }
+
+          
+
+            function _regClick() {
+                
+                vm.showNewRegistrationErrors = true;
+                if (vm.registrationForm.$valid) {
+                    var address = vm.item.address.address1 + " " + vm.item.address.city + " " + vm.item.address.state + " " + vm.item.address.zip;
+                    //invokes the geocode validation
+
+                    vm.codeAddress(address);                   
+                }
+                else {
+                    console.log("form submitted with invalid data :(")
+                }
+            }
+
+            function _setMapMarker(currentLat, currentLng) {
+
+                var currentOrgGeo = new google.maps.LatLng(currentLat, currentLng);
+                vm.map.setCenter(currentOrgGeo);
+                var marker = new google.maps.Marker({
+                    map: vm.map,
+                    position: currentOrgGeo
+                });
+
+                vm.map.fitBounds(currentOrgGeo);
+
+            }
+
+            function _onGeoSuccess(results, status) {
+                console.log("onGeoSuccess firing");
+                if (status == google.maps.GeocoderStatus.OK) { //checks that the address is valid
+                    console.log("google.maps.geocoderStatus = ok");
+                    var geometry = results[0].geometry;
+                    var loc = geometry.location;
+                    vm.map.setCenter(loc);
+                    var marker = new google.maps.Marker({
+                        map: vm.map,
+                        position: loc
+                    });
+
+                    if (geometry.viewport)
+                        //console.log("geometry.viewport entered");
+                    vm.map.fitBounds(geometry.viewport);
+
+                    var lat = loc.lat();
+                    var lon = loc.lng();
+
+                    //console.log("found coordinates in reply -> (%s, %s)", lat, lon);
+                    // sets the modal input fields so they can be captured
+                    vm.item.address.latitude = lat;
+                    vm.item.address.longitude = lon;
+
+                    registration = {};
+                    registration.address = vm.item.address.address1;
+                    registration.city = vm.item.address.city;
+                    registration.stateProvinceId = vm.item.address.stateProvinceId;
+                    registration.zip = vm.item.address.zip;
+                    registration.phone = vm.item.phone;
+                    registration.url = vm.item.url;
+                    registration.discount = vm.item.discount;
+                    registration.slug = vm.item.slug;
+                    registration.latitude = vm.item.address.latitude;
+                    registration.longitude = vm.item.address.longitude;
+                    
+                    // move to next page.
+                    vm.$formDataService.setRegistrationSubmit(registration);
+
+                    console.log(registration);
+                    
+                    
+                    //vm.$location.path("/payment");
+                    window.location.href = "/register/merchantregistration#/payment";
+                    console.log("item being sent to next page ", registration);
+                  
+
+                }
+                else {
+                    alert('Geocode was not successful for the following reason: ' + status);
+                }
+            };
+            
+            function _onGeoError() {
+
+                console.log("You need a better address");
+            }
+
+          
+        }
+
+        sabio.ng.addController(sabio.ng.app.module
+            , "registrationController"
+            , ['$scope', '$baseController', '$route', "$location", "$formDataService", "$merchantGeoService", "$merchantCategoryService"]
+            , sabio.services.register.registrationControllerFactory);
+
+
+
+        // main controller start
+        sabio.page.merchPaymentControllerFactory = function (
+        $scope
+        , $baseController
+        , $registerService
+        , $route
+        , $formDataService) {
+
+
+            var vm = this;
+
+            vm.stripeCredit = null;
+            $.extend(vm, $baseController);
+            vm.$scope = $scope;
+            vm.submit = _submit;
+
+            vm.$formDataService = $formDataService;
+
+            vm.$registerService = $registerService;
+         
+            vm.currentRequest = { originalPath: "/payment" }
+
+            vm.creditCardForm = null;
+            vm.bankingForm = null;
+            //vm.creditClick = _creditClick;
+            //vm.bankingClick = _bankingClick;
+            vm.onSubmitSuccess = _onSubmitSuccess;
+            vm.onSubmitError = _onSubmitError;
+
+            vm.showNewPayErrors = false;
+            
+
+            if ($route.current) {
+                vm.currentRequest = $route.current;
+                vm.currentRequest.locals = {};
+            };
+
+            function _submit() {
+                vm.showNewPayErrors = true;
+                
+              
+                if (vm.creditCardForm.$valid) {
+                    creditCard = {};
+                    creditCard.cardHolderName = vm.item.cardHolderName;
+                    creditCard.creditCardNumber = vm.item.creditCardNumber;
+                    creditCard.securityCode = vm.item.securityCode;
+                    creditCard.expiryMonth = vm.item.expiryMonth;
+                    creditCard.expiryYear = vm.item.expiryYear;
+
+                    vm.$formDataService.setCreditCardSubmit(creditCard);
+
+                    console.log(creditCard);
+
+                    var formData = vm.$formDataService.getTotalMerchData()
+
+                    vm.$registerService.createMerchant(formData, vm.onSubmitSuccess, vm.onSubmitError);
+
+                    console.log("This is you formData ", formData);
+
+                } else if (vm.bankingForm.$valid) {
+                    banking = {};
+                    banking.bankName = vm.item.bankName;
+                    banking.routingNumber = vm.item.routingNumber;
+                    banking.accountNumber = vm.item.accountNumber;
+
+                    vm.$formDataService.setBankingSubmit(banking);
+
+                    console.log(banking);
+
+                    var formData = vm.$formDataService.getTotalMerchData()
+
+                    vm.$registerService.createMerchant(formData, vm.onSubmitSuccess, vm.onSubmitError);
+
+                    console.log("This is you formData ", formData);
+
+                } else {
+
+                    console.log("Your data is not being submitted");
+                }
+
+            }
+
+                function _merchbanksuccess() {
+
+                    console.log("you got it");
+
+                };
+
+                function _merchbankerror(jqxhr, error) {
+                    console.error(error);
+                };
+
+                function _onSubmitSuccess(data, status, xhr) {
+                    console.log("success: ", data);
+                }
+
+                function _onSubmitError(jqXHR, textStatus, errorThrown) {
+                    console.log("submit failed");
+
+                }
+
+            //function _creditClick() {
+            //    vm.showNewCreditCardErrors = true;
+            //    if (vm.creditCardForm.$valid) {
+            //        creditCard = {};
+            //        creditCard.cardHolderName = vm.item.cardHolderName;
+            //        creditCard.creditCardNumber = vm.item.creditCardNumber;
+            //        creditCard.securityCode = vm.item.securityCode;
+            //        creditCard.expiryMonth = vm.item.expiryMonth;
+            //        creditCard.expiryYear = vm.item.expiryYear;
+
+            //        vm.$formDataService.setCreditCardSubmit(creditCard);
+
+            //        console.log(creditCard);
+
+            //        //var formData = vm.$formDataService.getTotalMerchData();
+
+            //        ////console.log(formData);
+
+            //        ////window.location.href = "/merchant/dashboard";
+            //        ////$location.path("/merchant/dashboard");
+
+            //        //vm.$registerService.createMerchant(formData, vm.merchCreditSuccess, vm.merchCreditError);
+
+            //    }
+
+            //}
+
+
+
+            //function _bankingClick() {
+            //    vm.showNewBankingErrors = true;
+            //    if (vm.bankingForm.$valid) {
+            //        banking = {};
+            //        banking.bankName = vm.item.bankName;
+            //        banking.routingNumber = vm.item.routingNumber;
+            //        banking.accountNumber = vm.item.accountNumber;
+
+            //        vm.$formDataService.setBankingSubmit(banking);
+
+            //        console.log(banking);
+
+            //        //var formData = vm.$formDataService.getTotalMerchData();
+
+            //        ////console.log(formData);
+
+            //        ////window.location.href = "/merchant/dashboard";
+            //        ////$location.path("/merchant/dashboard");
+
+            //        //vm.$registerService.createMerchant(formData, vm.merchBankSuccess, vm.merchBankError);
+
+            //    }
+
+            //};
+
+
+        sabio.ng.addController(sabio.ng.app.module
+            , "paymentController"
+            , ['$scope', '$baseController', '$registerService', '$route', '$formDataService']
+            , sabio.page.merchPaymentControllerFactory);
+
+
+
+
+        //sabio.services.register.bankingcontrollerfactory = function (
+        //   $scope
+        //   , $basecontroller
+        //   , $route
+        //   , $location
+        //   , $formdataservice
+        //   , $registerservice) {
+
+        //    var vm = this;
+        //    vm.item = null;
+        //    vm.bankingclick = _bankingclick;
+
+        //    vm.receiveitem = _receiveitem;
+        //    vm.merchbanksuccess = _merchbanksuccess;
+        //    vm.merchbankerror = _merchbankerror;
+
+
+
+        //    vm.bankingform = null;
+        //    vm.shownewbankingerrors = false;
+
+            
+        //    vm.$formdataservice = $formdataservice;
+        //    vm.$registerservice = $registerservice;
+
+        //    $.extend(vm, $basecontroller);
+        //    vm.$scope = $scope;
+        //    vm.notify = vm.$registerservice.getnotifier($scope);
+
+        //    vm.currentrequest = { originalpath: "/banking" }
+
+        //    if ($route.current) {
+        //        vm.currentrequest = $route.current;
+        //        vm.currentrequest.locals = {};
+        //    };
+
+
+
+        //    function _bankingclick() {
+        //        vm.shownewbankingerrors = true;
+        //        if (vm.bankingform.$valid) {
+        //            banking = {};
+        //            banking.bankname = vm.item.bankname;
+        //            banking.routingnumber = vm.item.routingnumber;
+        //            banking.accountnumber = vm.item.accountnumber;
+
+        //            vm.$formdataservice.setbankingsubmit(banking);
+
+        //            console.log(banking);
+
+        //            var formdata = vm.$formdataservice.gettotalmerchdata();
+
+        //            console.log(formdata);
+
+        //            window.location.href = "/merchant/dashboard";
+        //            $location.path("/merchant/dashboard");
+
+        //            vm.$registerservice.createmerchant(formdata, vm.merchbanksuccess, vm.merchbankerror);
+
+        //        }
+
+        //    };
+
+        //    function _merchbanksuccess() {
+
+        //        console.log("you got it");
+
+        //    };
+
+        //    function _merchbankerror(jqxhr, error) {
+        //        console.error(error);
+        //    };
+
+
+        //};
+
+        //sabio.ng.addcontroller(sabio.ng.app.module
+        //    , "bankingcontroller"
+        //    , ['$scope', '$basecontroller', '$route', "$location", "$formdataservice", "$registerservice"]
+        //    , sabio.services.register.bankingcontrollerfactory);
+
+
+
+
+        //sabio.services.register.creditCardControllerFactory = function (
+        //   $scope
+        //   , $baseController
+        //   , $route
+        //   , $location
+        //   , $formDataService
+        //   , $registerService) {
+
+        //    var vm = this;
+        //    vm.creditClick = _creditClick;
+
+        //    //vm.merchRegClick = _merchRegClick;
+        //    //vm.merchRegSuccess = _merchRegSuccess;
+        //    //vm.merchRegError = _merchRegError;
+
+        //    vm.creditCardForm = null;
+        //    vm.showNewCreditCardErrors = false;
+
+        //    vm.$formDataService = $formDataService;
+
+        //    $.extend(vm, $baseController);
+        //    vm.$scope = $scope;
+        //    //vm.notify = vm.$formDataService.getNotifier($scope);
+
+        //    vm.currentRequest = { originalPath: "/creditcard" }
+
+        //    if ($route.current) {
+        //        vm.currentRequest = $route.current;
+        //        vm.currentRequest.locals = {};
+        //    };
+
+
+        //    function _creditClick() {
+        //        vm.showNewCreditCardErrors = true;
+        //        if (vm.creditCardForm.$valid) {
+        //            creditCard = {};
+        //            creditCard.cardHolderName = vm.item.cardHolderName;
+        //            creditCard.creditCardNumber = vm.item.creditCardNumber;
+        //            creditCard.securityCode = vm.item.securityCode;
+        //            creditCard.expiryMonth = vm.item.expiryMonth;
+        //            creditCard.expiryYear = vm.item.expiryYear;
+
+        //            vm.$formDataService.setCreditCardSubmit(creditCard);
+
+        //            console.log(creditCard);
+
+        //            var formData = vm.$formDataService.getTotalMerchData();
+
+        //            //console.log(formData);
+
+        //            //window.location.href = "/merchant/dashboard";
+        //            //$location.path("/merchant/dashboard");
+
+        //            vm.$registerService.createMerchant(formData, vm.merchCreditSuccess, vm.merchCreditError);
+
+        //        }
+
+        //    };
+
+            
+
+        //    function _merchCreditSuccess() {
+        //        console.log("You have the credit");
+        //    }
+
+        //    function _merchCreditError(jqXhr, error) {
+        //        console.error(error);
+        //    }
+
+        //}
+
+        //sabio.ng.addController(sabio.ng.app.module
+        //    , "creditCardController"
+        //    , ['$scope', '$baseController', '$route', "$location", "$formDataService", "$registerService"]
+        //    , sabio.services.register.creditCardControllerFactory);
+
+
+
+    </script>
+}
