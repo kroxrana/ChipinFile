@@ -1,0 +1,53 @@
+ALTER PROCEDURE [dbo].[Merchant_Update]
+	-- Add the parameters for the stored procedure here
+	(	
+		@Uid uniqueidentifier  				
+		
+		,@Name nvarchar(50)		
+		,@ContactName nvarchar(50)
+		,@ContactLastName nvarchar(50)
+		,@TitlePosition nvarchar(50)
+		,@Phone nvarchar(50)
+		,@Hours ntext		
+		,@Url nvarchar(150)		
+		,@Discount int				
+		,@SubscriptionId nvarchar(50)
+		,@Description ntext
+		,@ContactPhone nvarchar(50)
+		)
+
+AS
+BEGIN
+	
+
+	----To check if the UiD does not already exist
+	----If it does, return error
+	--DECLARE @existing AS uniqueidentifier = (SELECT Uid FROM dbo.merchants WHERE Uid = @Uid)
+	--IF @existing IS NULL
+	
+	--BEGIN
+	--	RAISERROR('Uid is Null', 1, 1)
+	--	RETURN 
+	--END
+
+    -- UPDATE statements for procedure here
+	UPDATE dbo.merchants
+	
+	SET	 		   
+		    
+		    [Name] = @Name
+		   , [TitlePosition] = @TitlePosition
+           , [ContactName] = @ContactName
+		   , [ContactLastName] = @ContactLastName
+		   , [Phone] = @Phone
+		   , [Hours] = @Hours		 
+		   , [Url] = @Url
+		   , [Discount] = @Discount
+		   , [SubscriptionId] = @SubscriptionId
+		   , [Description] = @Description
+		   , [ContactPhone] = @ContactPhone
+		 
+	WHERE Uid = @Uid
+
+
+END
