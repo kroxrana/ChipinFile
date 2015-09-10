@@ -1,0 +1,123 @@
+using Sabio.Web.Models.Requests;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Web.Http;
+using Sabio.Web.Enums;
+using Sabio.Web.Services;
+using Sabio.Web.Models.Responses;
+using Sabio.Web.Domain;
+using Sabio.Web.Models;
+using System.Web;
+using Sabio.Web.Services.Interfaces;
+using Sabio.Web.Controllers.Attributes;
+using Sabio.Web.Core.Filters;
+using Sabio.Web.Core.Enums;
+
+
+
+namespace Sabio.Web.Controllers.Api
+{
+   
+    [RoutePrefix("api/merchant")]
+    public class MerchantApiController : ApiController
+    {   
+        private IMerchantService _merchantService;
+
+        private IFileService _fileService;
+        private IBankingService  _bankingService;
+       
+        public MerchantApiController(IFileService FileService, IMerchantService MerchantService, IBankingService BankingService)
+        {
+            _fileService = FileService;
+            _merchantService = MerchantService;
+            _bankingService = BankingService;
+        }
+        
+
+        [Route(""), HttpPost, Authorize]
+        public HttpResponseMessage Insert(MerchantCreateModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                string currentUserId = UserService.GetCurrentUserId();
+               
+                Guid newUid = _merchantService.InsertMerchantInfo(model, currentUserId);
+                ItemResponse<Guid> responseModel = new ItemResponse<Guid>();
+                responseModel.Item = newUid; 
+                return Request.CreateResponse(HttpStatusCode.OK, responseModel);
+            }
+            else
+            {
+            
+
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ModelState);
+            }
+        }
+        [EntityAuth(Action = EntityActionType.Write, EntityIdField = "newId", EntityTypeId = (int)SecuredEntities.Merchants)]
+        [Route("{newId:guid}/description"), HttpPut]
+        public HttpResponseMessage UpdateDescription(DescriptionModel model, Guid newId)
+        {
+            if (ModelState.IsValid)
+            {
+                Guid newUid = _merchantService.UpdateDescription(model, newId);
+                ItemResponse<Guid> responseModel = new ItemResponse<Guid>();
+                responseModel.Item = newUid;
+                return Request.CreateResponse(HttpStatusCode.OK, responseModel);
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ModelState);
+            }
+        }
+        
+        [Route("current"), HttpGet]
+        public HttpResponseMessage GetMerchantByCurrentUserId()
+        {
+                
+                var currentUser = UserService.GetCurrentUserId();
+                Merchant mer = _merchantService.GetMerchantByUserId(currentUser);
+                Guid Uid = mer.Uid;
+                Merchant merchantSelect = _merchantService.GetMerchant(Uid);
+                ItemResponse<Merchant> responseModel = new ItemResponse<Merchant>();
+                responseModel.Item = merchantSelect; 
+                return Request.CreateResponse(HttpStatusCode.OK, responseModel);     
+        }
+        
+       
+        [EntityAuth(Action = EntityActionType.Write, EntityIdField = "newId", EntityTypeId = (int)SecuredEntities.Merchants)]
+        [Route("{newId:guid}"), HttpPut]
+        public HttpResponseMessage Update(MerchantAdditionalInfoModel model, Guid newId)
+        {
+            if (ModelState.IsValid)
+            {
+              
+                Guid newUid = _merchantService.UpdateMerchantInfo(model, newId);
+                ItemResponse<Guid> responseModel = new ItemResponse<Guid>();
+                responseModel.Item = newUid; 
+                return Request.CreateResponse(HttpStatusCode.OK, responseModel);
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ModelState);
+            }
+        }
+       
+
+       [EntityAuth(Action = EntityActionType.Read, EntityIdField = "newId", EntityTypeId = (int)SecuredEntities.Merchants)]
+        [Route("{newId:guid}"), HttpGet]
+        public HttpResponseMessage Select(Guid newId)
+        {
+  
+            Merchant merchantSelect = _merchantService.GetMerchant(newId);
+                ItemResponse<Merchant> responseModel = new ItemResponse<Merchant>();
+                responseModel.Item = merchantSelect; 
+                return Request.CreateResponse(HttpStatusCode.OK, responseModel);
+            }
+
+    }
+}
+
+   
