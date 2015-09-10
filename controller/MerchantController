@@ -1,0 +1,23 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using Sabio.Web.Models.ViewModels;
+
+namespace Sabio.Web.Controllers
+{
+    [RoutePrefix("merchant")]
+    public class MerchantController : BaseController
+    {
+        // [Route ("edit/{newId:guid}"), Authorize]
+        [Route("description"), Authorize]
+        public ActionResult MerchantDescription(Guid? newId)
+        {
+            ItemViewModel<Guid?> vm = new ItemViewModel<Guid?>();
+            vm.Item = newId;
+            return View(vm);
+        }
+
+    }
+}
