@@ -1,0 +1,11 @@
+public class MerchantService : BaseService, IMerchantService
+    {
+
+        private ILocationService _locationService;
+        private IAddressService  _addressService;
+
+        public MerchantService(ILocationService locationService, IAddressService addressService)
+        {
+            _locationService = locationService;
+            _addressService = addressService;
+        }...
