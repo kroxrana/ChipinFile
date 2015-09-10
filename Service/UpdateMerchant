@@ -30,9 +30,7 @@ using Sabio.Web.Services.Interfaces;
                , inputParamMapper: delegate(SqlParameterCollection paramCollection)
                {
 
-                   paramCollection.AddWithValue("@Uid", newId);//Now we are providing the Uid from the database, it is no longer
-                   //an output.  So the first three lines of the initial service are no longer needed and are restructured
-
+                   paramCollection.AddWithValue("@Uid", newId);
                    paramCollection.AddWithValue("@Name", model.Name);
                    paramCollection.AddWithValue("@TitlePosition", model.TitlePosition);
                    paramCollection.AddWithValue("@ContactName", model.ContactName);
