@@ -1,0 +1,25 @@
+using Sabio.Web.Domain;
+using Sabio.Web.Models;
+using Sabio.Web.Models.Requests;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+namespace Sabio.Web.Services.Interfaces
+{
+    public interface IMerchantService
+    {
+        Guid InsertMerchantInfo(MerchantCreateModel model, string currentUserId);
+
+        Guid InitialMerchantReg(InitialMerchRegistration merch, MerchantRegistration model, string currentUserId);
+
+        Guid UpdateMerchantInfo(MerchantAdditionalInfoModel model, Guid newId);
+
+        Merchant GetMerchant(Guid merchantId);
+
+        List<Merchant> GetMerchantList();
+
+
+    }
+}
