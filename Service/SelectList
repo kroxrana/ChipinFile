@@ -1,0 +1,80 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Data;
+using System.Data.SqlClient;
+using Sabio.Data;
+using Sabio.Web.Models.Requests;
+using Sabio.Web.Domain;
+using Sabio.Web.Enums;
+using Sabio.Web.Models.Responses;
+using Sabio.Web.Models;
+using Sabio.Web.Services.Interfaces;
+
+public List<Merchant> GetMerchantList()
+        {
+            List<Merchant> adminList = null;
+
+            DataProvider.ExecuteCmd(GetConnection, "dbo.Merchant_SelectAdmin"
+               , inputParamMapper: delegate(SqlParameterCollection paramCollection)
+               {
+
+               }        
+               , map: delegate(IDataReader reader, short set)
+               {
+                   Merchant Items = new Merchant();
+
+
+                   int startingIndex = 0; 
+                   Items.Id = reader.GetSafeInt32(startingIndex++);
+                   Items.Uid = reader.GetGuid(startingIndex++);
+                   Items.Created = reader.GetDateTime(startingIndex++);
+                   Items.Name = reader.GetSafeString(startingIndex++);
+                   Items.ContactName = reader.GetSafeString(startingIndex++);
+                   Items.ContactLastName = reader.GetSafeString(startingIndex++);
+                   Items.Phone = reader.GetSafeString(startingIndex++);
+                   Items.Hours = reader.GetSafeString(startingIndex++);
+                   Items.AddressId = reader.GetSafeInt32(startingIndex++);
+                   Items.Url = reader.GetSafeString(startingIndex++);
+                   Items.Discount = reader.GetSafeInt32(startingIndex++);
+                   Items.Slug = reader.GetSafeString(startingIndex++);
+                   Items.ExternalCustomerId = reader.GetSafeString(startingIndex++);
+                   Items.SubscriptionId = reader.GetSafeInt32(startingIndex++);
+                   Items.Description = reader.GetSafeString(startingIndex++);
+                   Items.ContactPhone = reader.GetSafeString(startingIndex++);
+
+                   // Added by JHB to retrieve the Categories list
+                   MerchantCategories catList = GetMerchantCategory(Items.Uid);
+                   Items.Categories = catList.Categories;
+
+                   Items.Address = new Address();
+                   Items.Address.Id = reader.GetSafeInt32(startingIndex++);
+                   if (Items.Address.Id > 0)
+                   {
+                       Items.Address.Created = reader.GetSafeDateTime(startingIndex++);
+                       Items.Address.Address1 = reader.GetSafeString(startingIndex++);
+                       Items.Address.Address2 = reader.GetSafeString(startingIndex++);
+                       Items.Address.City = reader.GetSafeString(startingIndex++);
+                       Items.Address.State = reader.GetSafeString(startingIndex++);
+                       Items.Address.Zip = reader.GetSafeString(startingIndex++);
+                       Items.Address.Country = reader.GetSafeString(startingIndex++);
+                       Items.Address.Latitude = reader.GetDecimal(startingIndex++);
+                       Items.Address.Longitude = reader.GetDecimal(startingIndex++);
+
+
+                   }
+                   else { Items.Address = null; };
+
+                   if (adminList == null)
+                   {
+                       adminList = new List<Merchant>();
+                   }
+
+                   adminList.Add(Items);
+
+               }
+               );
+
+            return adminList;
+        }
