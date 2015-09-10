@@ -1,0 +1,21 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+namespace Sabio.Web.Models.Requests
+{
+    public class FullRegModel
+    {      
+
+        public InitialMerchRegistration Initial { get; set; }
+
+        public MerchantRegistration Registration { get; set; }
+
+        public int[] categories { get; set; }
+                       
+        public OrgCreditInfoModel CreditCard { get; set; }
+
+        public BankAccountInformation Banking { get; set; }
+    }
+}
