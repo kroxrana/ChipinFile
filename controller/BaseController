@@ -1,0 +1,121 @@
+using Microsoft.AspNet.Identity.EntityFramework;
+using Sabio.Web.Enums;
+using Sabio.Web.Models;
+using Sabio.Web.Models.ViewModels;
+using Sabio.Web.Services;
+using Sabio.Web.Services.Interfaces;
+using Sabio.Web.Domain;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using Microsoft.Practices.Unity;
+
+namespace Sabio.Web.Controllers
+{
+    public class BaseController : Controller
+    {
+        private IMemberInfoService _memberService = DependencyResolver.Current.GetService<IMemberInfoService>();
+        private IMerchantService _merchantService = DependencyResolver.Current.GetService<IMerchantService>();
+        private IOrganizationsService _organizationService = DependencyResolver.Current.GetService<IOrganizationsService>();
+
+        protected new ViewResult View()
+        {
+            //vmtest.myNewField = "Do What Now?!";
+            //return base.View(vmtest);
+            BaseViewModel vm = _GetBaseViewModel();
+            return base.View(vm);
+        }
+
+
+        protected new ViewResult View(string viewname)
+        {
+            BaseViewModel vm = _GetBaseViewModel();
+            return base.View(viewname, vm);
+        }
+
+        protected ViewResult View(string viewname, BaseViewModel vm)
+        {
+            vm = _DecorateBaseViewModel(vm);
+            return base.View(viewname, vm);
+        }
+
+        protected ViewResult View(BaseViewModel vm)
+        {
+            vm = _DecorateBaseViewModel(vm);
+            return base.View(vm);
+        }
+        private BaseViewModel _GetBaseViewModel()
+        {
+            return _DecorateBaseViewModel(new BaseViewModel());
+        }
+
+        private BaseViewModel _DecorateBaseViewModel(BaseViewModel vm)
+        {
+
+            vm.NavigationView = "Navbar/_Default";
+
+            string actionName = this.ControllerContext.RouteData.Values["action"].ToString();
+            string controllerName = this.ControllerContext.RouteData.Values["controller"].ToString();
+            string routeKey = controllerName + "/" + actionName;
+            vm.RouteKey = routeKey;
+
+            
+            if (UserService.IsLoggedIn())
+            {              
+                               
+                vm.CurrentUser = UserService.GetCurrentUser(); ;
+                vm.CurrentUserType = SessionService.getCurrentUserType();
+                vm.IsLoggedIn = true;               
+                    switch (vm.CurrentUserType)
+                    {
+                        case UserType.Member:
+                            vm.NavigationView = "Navbar/_MemberPartial";
+                            Member member = _memberService.GetMember(vm.CurrentUser.Id);
+                            if(member != null)
+                            {
+                                vm.DisplayName = member.FirstName + " " + member.LastName;
+                                vm.EntityInfo = member;
+                            }                         
+                            break;
+
+                        case UserType.Merchant:
+                            vm.NavigationView = "Navbar/_MerchantPartial";
+                            Merchant vendor = _merchantService.GetMerchantByUserId(vm.CurrentUser.Id);
+                            if (vendor != null) 
+                            { 
+                                vm.DisplayName = vendor.ContactName;
+                                vm.EntityInfo = vendor;
+                            }
+                            break;
+
+                        case UserType.Organization:
+                            vm.NavigationView = "Navbar/_OrganizationPartial";
+                            Organization org = _organizationService.GetOrganizationByUserId(vm.CurrentUser.Id);
+                            if (org != null)
+                            {
+                                vm.DisplayName = org.ContactName;
+                                vm.EntityInfo = org;
+                            }
+                            break;
+
+                        default:
+                            vm.NavigationView = "Navbar/_Default";
+                            break;
+                    }
+
+            }
+            else
+            {
+                vm.IsLoggedIn = false;
+                vm.NavigationView = "Navbar/_Default";
+            }
+
+            return vm;
+        }
+
+        
+
+    }
+}
