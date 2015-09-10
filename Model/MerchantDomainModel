@@ -1,0 +1,23 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+namespace Sabio.Web.Domain
+{
+    public class Merchant : BusinessEntity 
+    {
+
+        public string Hours { get; set; }
+
+        public int Discount{ get; set; }
+
+        public string Description { get; set; }
+
+        public string Pin { get; set; }
+        
+
+        public List<Category> Categories { get; set; }
+
+    }
+}
