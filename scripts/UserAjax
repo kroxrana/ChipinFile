@@ -1,0 +1,17 @@
+sabio.services.user = {};
+
+
+
+    sabio.services.user.getCurrentUser = function (onSuccess, onError) {
+        var url = "/api/user/current"
+        var settings = {
+            cache: false
+                    , contentType: "application/x-www-form-urlencoded; charset=UTF-8"
+                    , data: null
+                    , dataType: "json"
+                    , success: onSuccess
+                    , error: onError
+                    , type: "GET"
+        };
+        $.ajax(url, settings);
+}
