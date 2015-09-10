@@ -1,0 +1,79 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Data;
+using System.Data.SqlClient;
+using Sabio.Data;
+using Sabio.Web.Models.Requests;
+using Sabio.Web.Domain;
+using Sabio.Web.Enums;
+using Sabio.Web.Models.Responses;
+using Sabio.Web.Models;
+using Sabio.Web.Services.Interfaces;
+
+namespace Sabio.Web.Services
+{
+    public class MerchantService : BaseService, IMerchantService
+    {
+
+        private ILocationService _locationService;
+        private IAddressService  _addressService;
+
+        public MerchantService(ILocationService locationService, IAddressService addressService)
+        {
+            _locationService = locationService;
+            _addressService = addressService;
+        }
+        
+        //**********FOR INSERT*********
+        public Guid InsertMerchantInfo(MerchantCreateModel model, string currentUserId)
+        {
+            Guid uid = Guid.Empty;
+
+            //connecting form to address table
+            CreateAddressModel addressModel = new CreateAddressModel();
+            addressModel.Address1 = model.Address;
+            addressModel.City = model.City;
+            addressModel.Zip = model.Zip;
+            addressModel.StateProvinceId = model.StateProvinceId;
+            addressModel.Latitude = model.Latitude;
+            addressModel.Longitude = model.Longitude;
+            // set more fields from model here
+
+            int addressId = _addressService.InsertAddresses(addressModel);
+
+            DataProvider.ExecuteNonQuery(GetConnection, "dbo.Merchant_Insert"
+               , inputParamMapper: delegate(SqlParameterCollection paramCollection)
+               {
+                   SqlParameter p = new SqlParameter("@Uid", System.Data.SqlDbType.UniqueIdentifier);
+                   p.Direction = System.Data.ParameterDirection.Output;
+
+                   paramCollection.Add(p);
+
+                   paramCollection.AddWithValue("@UserId", currentUserId);
+                   paramCollection.AddWithValue("@Name", model.Name);
+                   paramCollection.AddWithValue("@ContactName", model.ContactName);
+                   paramCollection.AddWithValue("@ContactLastName", model.ContactLastName);
+                   paramCollection.AddWithValue("@TitlePosition", model.TitlePosition);
+                   paramCollection.AddWithValue("@Phone", model.Phone);
+                   paramCollection.AddWithValue("@Hours", model.Hours);
+                   paramCollection.AddWithValue("@AddressId", addressId);
+                   paramCollection.AddWithValue("@Url", model.url);
+                   paramCollection.AddWithValue("@Discount", model.Discount);
+                   paramCollection.AddWithValue("@Slug", model.Slug);
+                   paramCollection.AddWithValue("@ExternalCustomerId", DBNull.Value);
+                   paramCollection.AddWithValue("@SubscriptionId", null);
+                   paramCollection.AddWithValue("@Description", model.Description);
+                   paramCollection.AddWithValue("@ContactPhone", model.ContactPhone);
+
+
+
+               }, returnParameters: delegate(SqlParameterCollection param)
+               {
+                   Guid.TryParse(param["@Uid"].Value.ToString(), out uid);
+               });
+
+
+            return uid;
+        }
