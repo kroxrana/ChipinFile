@@ -1,0 +1,72 @@
+//*********ANGULAR SERVICE
+
+sabio.services.statistics.basicStatsServiceFactory = function ($baseService) {
+    var aBasicStatsObject = sabio.services.statistics;  
+    var newBasicStatsService = $.extend(true, {}, aBasicStatsObject, $baseService); 
+    return newBasicStatsService;  
+};
+
+
+sabio.ng.addService(sabio.ng.app.module 
+    , "$basicStatsService"  
+    , ["$baseService"]    
+    , sabio.services.statistics.basicStatsServiceFactory);   
+
+
+sabio.services.statistics.basicStatsControllerFactory = function (
+          $scope
+        , $baseController
+        , $basicStatsService) {
+
+    var vm = this;
+   
+    vm.basicStats = null;
+    vm.selectedBasicStats = null;
+
+   
+    vm.$basicStatsService = $basicStatsService;
+
+    vm.receiveItem = _receiveItem;
+    vm.onBasicStatsError = _onBasicStatsError;
+    vm.selectBasicStats = _selectBasicStats;
+    vm.saveStatus = _saveStatus;
+
+    $.extend(vm, $baseController);
+
+  
+    vm.notify = vm.$basicStatsService.getNotifier($scope);
+
+    render();
+
+    function render() {
+        vm.$basicStatsService.basicStatsSelect(vm.receiveItem, vm.onBasicStatsError);
+    }
+
+    function _receiveItem(data) {
+    
+        vm.notify(function () {
+            vm.basicStats = data.item;
+            console.log("this is your", data.item)
+        });
+    }
+
+    function _selectBasicStats(aBasicStats) {
+        console.log(aBasicStats);
+        vm.selectedBasicStats = aBasicStats;
+    }
+
+    function _saveStatus(aBasicStats) {
+        console.log("Go and save this new data");
+        console.log(aBasicStats);
+    }
+
+    function _onBasicStatsError(jqXhr, error) {
+        console.error("Page is not correct");
+    }
+
+}
+
+sabio.ng.addController(sabio.ng.app.module
+    , "basicStatsController"
+    , ['$scope', '$baseController', "$basicStatsService"]
+    , sabio.services.statistics.basicStatsControllerFactory);
