@@ -1,0 +1,77 @@
+ALTER PROCEDURE [dbo].[Merchant_Insert]
+	-- Add the parameters for the stored procedure here
+	(
+	
+		@Uid uniqueidentifier output
+		,@UserId varchar(128)	
+		,@Name nvarchar(50)
+		,@ContactName nvarchar(50)
+		,@ContactLastName nvarchar(50)
+		,@TitlePosition nvarchar(50)
+		,@Phone nvarchar(50)
+		,@Hours ntext
+		,@AddressId int
+		,@Url nvarchar(150)		
+		,@Discount int
+		,@Slug nvarchar(50)=null
+		,@ExternalCustomerId nvarchar(50)=null
+		,@SubscriptionId int=null
+		,@Description ntext
+		,@ContactPhone nvarchar(50)
+		)
+
+AS
+BEGIN
+
+DECLARE @AppUserId int = 0;
+
+
+EXECUTE [dbo].AspNetUsers_SelectAppUserId @AppUserId output, @UserId
+
+	
+	SET @Uid = NewId()
+
+    -- Insert statements for procedure here
+	INSERT INTO dbo.merchants
+	(
+		   Uid
+		   , Created
+		   , AppUserId
+		   , Name
+           , ContactName
+		   , ContactLastName
+		   , TitlePosition
+		   , Phone
+		   , Hours
+		   , AddressId
+		   , Url
+		   , Discount
+		   , Slug
+		   , ExternalCustomerId
+		   , SubscriptionId
+		   , Description
+		   , ContactPhone
+		   )
+
+	VALUES
+           (
+		   @Uid
+		   ,GETDATE()
+		   , @AppUserId
+		   , @Name
+		   , @ContactName
+		   , @ContactLastName
+		   , @TitlePosition
+		   , @Phone
+		   , @Hours
+		   , @AddressId
+		   , @Url
+		   , @Discount
+		   , @Slug
+		   , @ExternalCustomerId
+		   , @SubscriptionId
+		   , @Description
+		   , @ContactPhone
+		   )
+
+END
